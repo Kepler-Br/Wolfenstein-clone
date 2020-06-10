@@ -15,6 +15,15 @@ void State_game::on_draw()
         this->renderer.render_map(false, false, 0.5f);
     else if(this->render_map_state == 2)
         this->renderer.render_map(false, true, 0.5f);
+//    for(int x = 0; x < this->texture.get_resolution().x; x++)
+//    {
+//        for(int y = 0; y < this->texture.get_resolution().y; y++)
+//        {
+//            const Pixel &pixel = texture.get_pixel(glm::ivec2(x, y));
+//            SDL_SetRenderDrawColor(renderer, pixel.r, pixel.g, pixel.b, SDL_ALPHA_OPAQUE);
+//            SDL_RenderDrawPoint(renderer, x, y);
+//        }
+//    }
 }
 
 State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_instance &sdl_instance) :
@@ -26,14 +35,15 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_i
         physics(world, raycaster, player),
         sdl_instance(sdl_instance)
 {
-    this->prev_state = prev_state;
 }
 
-void State_game::engine_update() {
+void State_game::engine_update()
+{
 
 }
 
-void State_game::on_event() {
+void State_game::on_event()
+{
     const float deltatime = this->main_loop.get_deltatime();
     if(this->input_manager.isKeyDown(SDLK_w))
     {
@@ -89,17 +99,20 @@ void State_game::on_event() {
         this->is_player_running = false;
 }
 
-void State_game::on_update() {
+void State_game::on_update()
+{
 
 }
 
-void State_game::on_predraw() {
+void State_game::on_predraw()
+{
     const auto &renderer = this->sdl_instance.renderer;
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 }
 
-void State_game::on_postdraw() {
+void State_game::on_postdraw()
+{
     const auto &renderer = this->sdl_instance.renderer;
     SDL_RenderPresent(renderer);
 }

@@ -17,7 +17,7 @@ private:
     const Player &player;
     const Sdl_instance &sdl_instance;
     float field_of_view = 70.0f*M_PI/180.0f;
-    int blockiness = 5;
+    int blockiness = 1;
 
     void render_view_rays(const glm::vec2 &center, const float &size);
     void render_one_block_view_rays(const glm::vec2 &center, const float &size);
