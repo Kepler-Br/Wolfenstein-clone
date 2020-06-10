@@ -6,10 +6,10 @@
 
 void State_game::on_draw()
 {
-    const auto &renderer = this->sdl_instance.renderer;
+    const auto &renderer = this->sdl_wrapper.get_renderer();
 
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-    this->renderer.render_world();
+    this->renderer.render();
 
     if(this->render_map_state == 1)
         this->renderer.render_map(false, false, 0.5f);
@@ -26,14 +26,14 @@ void State_game::on_draw()
 //    }
 }
 
-State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_instance &sdl_instance) :
+State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance) :
         State_base(main_loop, main_loop.get_prev_state()),
         input_manager(input_manager),
         raycaster(world),
         player({68.5f, 68.5f, 0.0f}, 0.0f),
         renderer(world, raycaster, player, sdl_instance),
         physics(world, raycaster, player),
-        sdl_instance(sdl_instance)
+        sdl_wrapper(sdl_instance)
 {
 }
 
@@ -101,18 +101,15 @@ void State_game::on_event()
 
 void State_game::on_update()
 {
-
+//    std::cout << 1.0f/this->main_loop.get_deltatime() << std::endl;
 }
 
 void State_game::on_predraw()
 {
-    const auto &renderer = this->sdl_instance.renderer;
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer);
+    this->sdl_wrapper.clear();
 }
 
 void State_game::on_postdraw()
 {
-    const auto &renderer = this->sdl_instance.renderer;
-    SDL_RenderPresent(renderer);
+    this->sdl_wrapper.present();
 }

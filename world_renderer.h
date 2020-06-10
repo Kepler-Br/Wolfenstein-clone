@@ -2,20 +2,21 @@
 // Created by kepler-br on 6/6/20.
 //
 
-#ifndef WOLFENSHETIN_RENDERER_H
-#define WOLFENSHETIN_RENDERER_H
+#ifndef WOLFENSHETIN_WORLD_RENDERER_H
+#define WOLFENSHETIN_WORLD_RENDERER_H
 
 #include "raycaster.h"
 #include "world.h"
 #include "player.h"
-#include "sdl_instance.h"
+#include "sdl_wrapper.h"
+#include <SDL2/SDL_image.h>
 
-class Renderer {
+class World_renderer {
 private:
     World &world;
     const Raycaster &raycaster;
     const Player &player;
-    const Sdl_instance &sdl_instance;
+    Sdl_wrapper &sdl_wrapper;
     float field_of_view = 70.0f*M_PI/180.0f;
     int blockiness = 1;
 
@@ -25,8 +26,8 @@ private:
     void render_player(const glm::vec2 &center, const float &size);
 
 public:
-    Renderer(World &world, const Raycaster &raycaster, const Player &player, const Sdl_instance &sdl_instance);
-    void render_world();
+    World_renderer(World &world, const Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper);
+    void render();
     void render_map(const bool render_rays, const bool fill_screen, const float size = 1.0f);
 
     void set_fov(const float &fov);
@@ -34,4 +35,4 @@ public:
 };
 
 
-#endif //WOLFENSHETIN_RENDERER_H
+#endif //WOLFENSHETIN_WORLD_RENDERER_H

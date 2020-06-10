@@ -5,7 +5,7 @@
 #ifndef WOLFENSHETIN_MAIN_LOOP_H
 #define WOLFENSHETIN_MAIN_LOOP_H
 
-#include "sdl_instance.h"
+#include "sdl_wrapper.h"
 #include <vector>
 #include <stack>
 #include "input_manager.h"
@@ -20,7 +20,7 @@ private:
     bool is_running = false;
     std::stack<State_base *> state_stack;
     State_base *state_to_delete = nullptr;
-    Sdl_instance sdl_instance;
+    Sdl_wrapper sdl_instance;
     Input_manager input_manager;
 
     void pop_all_states();
@@ -39,7 +39,7 @@ public:
     const float &get_deltatime() const;
     void set_max_fps(const int &fps);
     Input_manager &get_input_manager();
-    Sdl_instance &get_sdl_instance();
+    Sdl_wrapper &get_sdl_instance();
     void start();
     void stop();
 };
