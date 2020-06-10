@@ -48,6 +48,7 @@ World::World() {
         this->world[i].color = {rand() % 255, rand() % 255, rand() % 255};
     }
     delete[] blocks;
+    this->texture.read("./image_packer/target.tex");
 }
 
 const glm::ivec2 &World::get_world_dimensions() const

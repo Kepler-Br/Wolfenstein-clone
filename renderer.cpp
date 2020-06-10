@@ -70,14 +70,25 @@ void Renderer::render_world()
             fish_eye_fix -= 2*M_PI;
         float fixed_length = raycast.ray_length * std::cos(fish_eye_fix);
         float line_height = (64*this->sdl_instance.resolution.y)/fixed_length;
-//        if (line_height > this->resolution.x)
-//            line_height = this->resolution.x;
         float line_offset = this->sdl_instance.resolution.y/3.0f-line_height/2.0f;
-        SDL_SetRenderDrawColor(renderer, block.color.x, block.color.y, block.color.z, 255);
-        for (int blockiness = 0; blockiness < this->blockiness; blockiness++)
+
+        if (line_height + line_offset > this->sdl_instance.resolution.y)
+            line_height = line_height - (line_height + line_offset - this->sdl_instance.resolution.y);
+        if (line_height + line_offset > this->sdl_instance.resolution.y)
+            std::cout << line_height + line_offset << std::endl;
         {
-            SDL_RenderDrawLine(renderer, x*this->blockiness+blockiness, 0+line_offset, x*this->blockiness+blockiness, line_height+line_offset);
+            for(float i = 0; i < line_height; i++)
+            {
+                SDL_SetRenderDrawColor(renderer, block.color.x, block.color.y, block.color.z, 255);
+                SDL_RenderDrawPoint(renderer, x, line_offset + i);
+            }
         }
+
+//        for (int blockiness = 0; blockiness < this->blockiness; blockiness++)
+//        {
+//            SDL_SetRenderDrawColor(renderer, block.color.x, block.color.y, block.color.z, 255);
+//            SDL_RenderDrawLine(renderer, x*this->blockiness+blockiness, 0+line_offset, x*this->blockiness+blockiness, line_height+line_offset);
+//        }
         x++;
     }
 }

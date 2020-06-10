@@ -6,6 +6,7 @@
 #define WOLFENSHETIN_WORLD_H
 
 #include <glm/glm.hpp>
+#include "texture.h"
 
 struct Block {
     glm::ivec2 world_position;
@@ -30,6 +31,7 @@ private:
     int world_length;
     glm::ivec2 world_dimensions;
     float block_size = int(64.0f/1.5f);
+    Texture texture;
 public:
     World();
     const int &get_world_length() const;

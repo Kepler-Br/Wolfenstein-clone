@@ -15,6 +15,7 @@
 #include "renderer.h"
 #include "physics.h"
 #include "input_manager.h"
+#include <SDL2/SDL_image.h>
 
 class State_game: State_base
 {
@@ -29,7 +30,7 @@ private:
     Renderer renderer;
     Physics physics;
     Player player;
-    State_base *prev_state;
+
 
 public:
     State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_instance &sdl_instance);
