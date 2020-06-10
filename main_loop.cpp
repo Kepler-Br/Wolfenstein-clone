@@ -18,7 +18,7 @@ void Main_loop::pop_all_states()
 
 Main_loop::Main_loop(const glm::ivec2 &resolution)
 {
-    this->sdl_instance = Sdl_instance(resolution);
+    this->sdl_instance = Sdl_wrapper(resolution);
     this->resolution = resolution;
 }
 
@@ -64,7 +64,6 @@ void Main_loop::start()
         current_state->on_event();
         current_state->engine_update();
         current_state->on_update();
-        const auto &renderer = this->sdl_instance.renderer;
         current_state->on_predraw();
         current_state->on_draw();
         current_state->on_postdraw();
@@ -113,7 +112,7 @@ Input_manager &Main_loop::get_input_manager()
     return this->input_manager;
 }
 
-Sdl_instance &Main_loop::get_sdl_instance() {
+Sdl_wrapper &Main_loop::get_sdl_instance() {
     return this->sdl_instance;
 }
 

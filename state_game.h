@@ -8,11 +8,11 @@
 
 #include "main_loop.h"
 #include "state_base.h"
-#include "sdl_instance.h"
+#include "sdl_wrapper.h"
 #include "raycaster.h"
 #include "world.h"
 #include "player.h"
-#include "renderer.h"
+#include "world_renderer.h"
 #include "physics.h"
 #include "input_manager.h"
 #include <SDL2/SDL_image.h>
@@ -23,17 +23,16 @@ private:
     int render_map_state = 0;
     bool is_player_running = false;
     bool is_paused = false;
-    Sdl_instance &sdl_instance;
+    Sdl_wrapper &sdl_wrapper;
     Input_manager &input_manager;
     Raycaster raycaster;
     World world;
-    Renderer renderer;
+    World_renderer renderer;
     Physics physics;
     Player player;
 
-
 public:
-    State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_instance &sdl_instance);
+    State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance);
     void engine_update() override;
     void on_event() override;
     void on_update() override;

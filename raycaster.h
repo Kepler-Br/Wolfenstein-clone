@@ -12,6 +12,7 @@ struct Ray {
     glm::vec2 ray_position;
     float ray_length;
 };
+
 enum block_side {
     right = 0,
     up,
