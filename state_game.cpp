@@ -80,9 +80,13 @@ void State_game::on_event()
         this->player.set_position(new_position);
     }
     if(this->input_manager.isKeyDown(SDLK_LEFT))
-        this->player.add_view_angle(-M_PI / 1.0f * deltatime);
+        this->player.add_x_view_angle(-M_PI / 1.0f * deltatime);
     if(this->input_manager.isKeyDown(SDLK_RIGHT))
-        this->player.add_view_angle(M_PI / 1.0f * deltatime);
+        this->player.add_x_view_angle(M_PI / 1.0f * deltatime);
+    if(this->input_manager.isKeyDown(SDLK_UP))
+        this->player.add_y_view_angle(640 * deltatime);
+    if(this->input_manager.isKeyDown(SDLK_DOWN))
+        this->player.add_y_view_angle(-640 * deltatime);
     if(this->input_manager.isKeyDown(SDLK_ESCAPE))
         this->main_loop.stop();
     if(this->input_manager.isEventPending(SDL_QUIT))
@@ -102,6 +106,7 @@ void State_game::on_event()
 void State_game::on_update()
 {
 //    std::cout << 1.0f/this->main_loop.get_deltatime() << std::endl;
+
 }
 
 void State_game::on_predraw()

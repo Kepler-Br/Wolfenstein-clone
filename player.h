@@ -9,51 +9,68 @@
 
 class Player
 {
-    float view_angle = 0.0f;
+    float x_view_angle = 0.0f;
+    float y_view_angle = 0.0f;
     glm::vec3 position;
     glm::vec2 forward;
     void calculate_forward()
     {
-        this->forward = {cos(this->view_angle),
-                         sin(this->view_angle)};
+        this->forward = {cos(this->x_view_angle),
+                         sin(this->x_view_angle)};
     }
 
-    void clamp_look_angle()
+    float clamp_angle(float angle)
     {
-        if (this->view_angle < 0)
-            this->view_angle += 2.0f * M_PI;
-        if (this->view_angle > 2.0f * M_PI)
-            this->view_angle -= 2.0f * M_PI;
+        if (angle < 0)
+            angle += 2.0f * M_PI;
+        if (angle > 2.0f * M_PI)
+            angle -= 2.0f * M_PI;
+        return angle;
     }
 public:
 
 
-    const float height = 64.0f;
+    const float height = 30;
 
     Player(const glm::vec3 &position, const float look_angle):
             position(position),
-            view_angle(look_angle)
+            x_view_angle(look_angle)
     {
         this->calculate_forward();
     }
 
-    void set_view_angle(const float &angle)
+    void set_x_view_angle(const float &angle)
     {
-        this->view_angle = angle;
+//        this->x_view_angle = angle;
+        this->x_view_angle = this->clamp_angle(angle);
         this->calculate_forward();
-        this->clamp_look_angle();
+//        this->clamp_angle();
     }
 
-    void add_view_angle(const float &angle)
+    void add_x_view_angle(const float &angle)
     {
-        this->view_angle += angle;
-        this->clamp_look_angle();
+        this->x_view_angle = this->clamp_angle(this->x_view_angle + angle);
         this->calculate_forward();
     }
 
-    float get_view_angle() const
+    float get_x_view_angle() const
     {
-        return this->view_angle;
+        return this->x_view_angle;
+    }
+
+    void set_y_view_angle(const float &angle)
+    {
+        this->y_view_angle = angle;
+    }
+
+    void add_y_view_angle(const float &angle)
+    {
+        this->y_view_angle = this->y_view_angle + angle;
+    }
+
+    float get_y_view_angle() const
+    {
+        return this->y_view_angle;
     }
 
     const glm::vec3 &get_position() const

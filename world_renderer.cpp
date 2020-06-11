@@ -22,7 +22,7 @@ World_renderer::World_renderer(World &world, const Raycaster &raycaster, const P
 
 World_renderer::~World_renderer()
 {
-//    std::cout << "Waiting for threads to stop\n";
+// `   std::cout << "Waiting for threads to stop\n";
 //    for(int i = 0; i < this->threads_total; i++)
 //    {
 //        this->renderers->stop();
@@ -31,15 +31,15 @@ World_renderer::~World_renderer()
 //    }
 //
 //    delete[] this->threads;
-//    delete[] this->renderers;
+//    delete[] this->renderers;`
 }
 
 
 void World_renderer::render()
 {
 //    this->render_mutex.lock();
-//    const float start_angle = this->player.get_view_angle() - this->field_of_view / 2.0f;
-//    const float end_angle = this->player.get_view_angle() +this->field_of_view / 2.0f;
+//    const float start_angle = this->player.get_x_view_angle() - this->field_of_view / 2.0f;
+//    const float end_angle = this->player.get_x_view_angle() +this->field_of_view / 2.0f;
 //    const float step = this->field_of_view/this->threads_total;
 //    const int xstep = this->sdl_wrapper.resolution.x / this->threads_total;
 //    int x = 0;
@@ -53,19 +53,17 @@ void World_renderer::render()
 //    this->render_mutex.unlock();
 //    this->new_tasks.notify_all();
 //    std::cout << "Pushed new tasks\n";
-    const auto &renderer = this->sdl_wrapper.get_renderer();
+
     const float &block_size = this->world.get_block_size();
 
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
     int x = 0;
-    const float start_angle = this->player.get_view_angle() - this->field_of_view / 2.0f;
-    const float end_angle = this->player.get_view_angle() +this->field_of_view / 2.0f;
+    const float start_angle = this->player.get_x_view_angle() - this->field_of_view / 2.0f;
+    const float end_angle = this->player.get_x_view_angle() + this->field_of_view / 2.0f;
     const float step = this->field_of_view / (this->sdl_wrapper.resolution.x / this->blockiness);
     this->sdl_wrapper.lock_framebuffer();
     this->sdl_wrapper.clear_framebuffer();
     for(float xangle = start_angle; xangle < end_angle; xangle += step)
     {
-//      const glm::ivec2 player_block_position = {int(this->player.get_position().x)/64, int(this->player.get_position().y)/64};
         const glm::ivec2 player_block_position = {int(this->player.get_position().x)/block_size, int(this->player.get_position().y)/block_size};
         const Block &player_block = this->world.get_block(player_block_position);
         Ray raycast;
@@ -78,7 +76,6 @@ void World_renderer::render()
         if(player_block.is_portal)
         {
             Block portal_to_block = this->world.get_block(player_block.portal_to_block_id);
-//            glm::vec2 new_position = glm::vec2(this->player.get_position()) - glm::vec2(player_block_position*64) + portal_to_block.scaled_world_position;
             glm::vec2 new_position = glm::vec2(this->player.get_position()) - glm::vec2(player_block_position.x*block_size, player_block_position.y*block_size) + portal_to_block.scaled_world_position;
             raycast = this->raycaster.raycast(xangle, new_position);
 
@@ -98,51 +95,42 @@ void World_renderer::render()
                 block = this->world.get_block(raycast.block_index);
             }
         }
-//        if (!player_block.is_portal && block.is_portal)
-//        {
-//            const float length = raycast.ray_length;
-//            Block portal_to_block = this->world.get_block(block.portal_to_block_id);
-//            glm::vec2 new_position = raycast.ray_position - block.scaled_world_position + portal_to_block.scaled_world_position;
-//            raycast = this->raycaster.raycast(xangle, new_position);
-//            raycast.ray_length += length;
-//            block = this->world.get_block(raycast.block_index);
-//        }
+
         world.set_block_seen(true, raycast.block_index);
-        float fish_eye_fix = this->player.get_view_angle() - xangle;
+        float fish_eye_fix = this->player.get_x_view_angle() - xangle;
         if(fish_eye_fix < 0)
             fish_eye_fix += 2*M_PI;
         if (fish_eye_fix > 2*M_PI)
             fish_eye_fix -= 2*M_PI;
         float fixed_length = raycast.ray_length * std::cos(fish_eye_fix);
-        float line_height = (64*this->sdl_wrapper.resolution.y) / fixed_length;
-        float line_offset = this->sdl_wrapper.resolution.y / 3.0f - line_height / 2.0f;
+        float line_height = (124*this->sdl_wrapper.resolution.y) / fixed_length;
+        float line_offset = this->sdl_wrapper.resolution.y / 3.0f - line_height / 2.0f + this->player.get_x_view_angle() + this->player.get_y_view_angle();
+        Texture &texture = this->world.texture;
+
+        float uv_start = 0.0f;
+        float old_height = line_height;
+        float uv_step = (std::abs(uv_start)+1.0f)/old_height;
 
         if (int(line_height + line_offset) >= this->sdl_wrapper.resolution.y)
-            line_height = line_height - (line_height + line_offset - this->sdl_wrapper.resolution.y) - 1;
+        {
+           line_height = line_height - (line_height + line_offset - this->sdl_wrapper.resolution.y) - 1;
+        }
 
-//        if(line_height + line_offset > this->sdl_wrapper.resolution.y)
-//            std::cout << line_height + line_offset << ": " << this->sdl_wrapper.resolution.y << ": " << (int(line_height + line_offset) > this->sdl_wrapper.resolution.y) << std::endl;
+
         if(line_offset < 0)
         {
+            uv_start = (-line_offset)/old_height;
             line_height += line_offset;
             line_offset = 0;
         }
 
-//            line_offset = 0;
-//        if (line_offset < 0)
-//            std::cout << line_offset << std::endl;
+        glm::vec2 uv = glm::vec2((raycast.ray_position.x - block.scaled_world_position.x) / this->world.get_block_size(), uv_start);
+        for(float i = 0; i < line_height; i++)
         {
-            for(float i = 0; i < line_height; i++)
-            {
-                this->sdl_wrapper.set_framebuffer_pixel(block.color, glm::ivec2(x, line_offset + i));
-            }
+            uv.y += uv_step;
+            const Pixel &pixel = this->world.texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(pixel.r, pixel.g, pixel.b), glm::ivec2(x, line_offset + i));
         }
-
-//        for (int blockiness = 0; blockiness < this->blockiness; blockiness++)
-//        {
-//            SDL_SetRenderDrawColor(renderer, block.color.x, block.color.y, block.color.z, 255);
-//            SDL_RenderDrawLine(renderer, x*this->blockiness+blockiness, 0+line_offset, x*this->blockiness+blockiness, line_height+line_offset);
-//        }
         x++;
     }
     this->sdl_wrapper.unlock_framebuffer();
@@ -195,8 +183,8 @@ void World_renderer::set_blockiness(const int &blockiness) {
 void World_renderer::render_view_rays(const glm::vec2 &center, const float &size)
 {
     const auto &renderer = this->sdl_wrapper.get_renderer();
-    const float start_angle = this->player.get_view_angle() - this->field_of_view / 2.0f;
-    const float end_angle = this->player.get_view_angle() +this->field_of_view / 2.0f;
+    const float start_angle = this->player.get_x_view_angle() - this->field_of_view / 2.0f;
+    const float end_angle = this->player.get_x_view_angle() + this->field_of_view / 2.0f;
     const float step = this->field_of_view / (this->sdl_wrapper.resolution.x / this->blockiness);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -270,8 +258,8 @@ void World_renderer::render_blocks(const glm::vec2 &center, const float &size, c
 void World_renderer::render_one_block_view_rays(const glm::vec2 &center, const float &size)
 {
     SDL_Renderer *renderer = this->sdl_wrapper.get_renderer();
-    const float start_angle = this->player.get_view_angle() - this->field_of_view / 2.0f;
-    const float end_angle = this->player.get_view_angle() +this->field_of_view / 2.0f;
+    const float start_angle = this->player.get_x_view_angle() - this->field_of_view / 2.0f;
+    const float end_angle = this->player.get_x_view_angle() + this->field_of_view / 2.0f;
     const float step = this->field_of_view / (this->sdl_wrapper.resolution.x / this->blockiness);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);

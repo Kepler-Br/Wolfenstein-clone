@@ -20,7 +20,7 @@ class Texture
 {
 private:
     bool transparent;
-    bool wrap = false;
+    bool wrap = true;
     Pixel *pixels = nullptr;
     glm::ivec2 resolution;
     uint pixel_count;
@@ -34,6 +34,7 @@ public:
     Pixel *get_pixels() const;
     const Pixel &get_pixel(const uint &index) const;
     const Pixel &get_pixel(const glm::ivec2 &position) const;
+    const Pixel &get_normalized_pixel(const glm::vec2 &position) const;
     const uint &get_pixel_count() const;
     const glm::ivec2 &get_resolution() const;
     const bool is_transparent() const;
