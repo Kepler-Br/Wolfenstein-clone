@@ -10,12 +10,49 @@ World_renderer::World_renderer(World &world, const Raycaster &raycaster, const P
         player(player),
         sdl_wrapper(sdl_wrapper)
 {
-    SDL_Renderer *renderer = this->sdl_wrapper.get_renderer();
     const glm::ivec2 &resolution = this->sdl_wrapper.resolution;
+//    this->threads = new std::thread[this->threads_total];
+//    this->renderers = new World_renderer_thread[this->threads_total];
+//    for(int i = 0; i < this->threads_total; i++)
+//    {
+//        this->renderers[i] = World_renderer_thread(&tasks, &this->new_tasks, &task_wait_mutex, &this->render_mutex, &world, &raycaster, &player, &sdl_wrapper);
+//        this->threads[i] = std::thread(this->renderers[i]);
+//    }
 }
+
+World_renderer::~World_renderer()
+{
+//    std::cout << "Waiting for threads to stop\n";
+//    for(int i = 0; i < this->threads_total; i++)
+//    {
+//        this->renderers->stop();
+//        this->threads[i].join();
+//        std::cout << "Thread stopped\n";
+//    }
+//
+//    delete[] this->threads;
+//    delete[] this->renderers;
+}
+
 
 void World_renderer::render()
 {
+//    this->render_mutex.lock();
+//    const float start_angle = this->player.get_view_angle() - this->field_of_view / 2.0f;
+//    const float end_angle = this->player.get_view_angle() +this->field_of_view / 2.0f;
+//    const float step = this->field_of_view/this->threads_total;
+//    const int xstep = this->sdl_wrapper.resolution.x / this->threads_total;
+//    int x = 0;
+//    for(float xangle = start_angle; xangle < end_angle - step; xangle += step)
+//    {
+//        glm::vec2 xangle_interval = glm::vec2(xangle, xangle + step);
+//        glm::ivec2 x_interval = glm::ivec2(x, x + xstep);
+//        this->tasks.push(std::make_pair(xangle_interval, x_interval));
+//        x += xstep;
+//    }
+//    this->render_mutex.unlock();
+//    this->new_tasks.notify_all();
+//    std::cout << "Pushed new tasks\n";
     const auto &renderer = this->sdl_wrapper.get_renderer();
     const float &block_size = this->world.get_block_size();
 
