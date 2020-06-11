@@ -25,26 +25,19 @@ const Ray Raycaster::raycast(float ray_angle, const glm::vec2 &start_position) c
     depth_of_field = 0;
     if (ray_angle == 0.0f || ray_angle == M_PI) // Looking straight left or right.
     {
-//        ray_position = start_position;
         ray_angle += epsilon;
-//        depth_of_field = 18;
     }
     if (ray_angle > M_PI ) // Looking down.
     {
-
-//        ray_position.y = (((int)start_position.y>>6)<<6) - 0.0001f;
         ray_position.y = (int(int(start_position.y)/block_size)*block_size) - 0.0001f;
         ray_position.x = (start_position.y - ray_position.y)*a_tan + start_position.x;
-//        offset.y = -64;
         offset.y = -block_size;
         offset.x = -offset.y*a_tan;
     }
     if (ray_angle < M_PI ) // Looking up.
     {
-//        ray_position.y = (((int)start_position.y>>6)<<6) + 64.0f;
         ray_position.y = int(int(start_position.y)/block_size)*block_size + block_size;
         ray_position.x = (start_position.y - ray_position.y)*a_tan + start_position.x;
-//        offset.y = 64;
         offset.y = block_size;
         offset.x = -offset.y*a_tan;
     }
@@ -52,8 +45,6 @@ const Ray Raycaster::raycast(float ray_angle, const glm::vec2 &start_position) c
     const glm::ivec2 &world_size = this->world.get_world_dimensions();
     while (depth_of_field < 18)
     {
-//        map_xy.x = int(ray_position.x) >> 6;
-//        map_xy.y = int(ray_position.y) >> 6;
         map_xy.x = int(ray_position.x)/block_size;
         map_xy.y = int(ray_position.y)/block_size;
         horizontal_map_index = map_xy.y * world_size.x + map_xy.x;
@@ -81,25 +72,19 @@ const Ray Raycaster::raycast(float ray_angle, const glm::vec2 &start_position) c
     int vertical_map_index = 0;
     if (ray_angle == 0 || ray_angle == M_PI) // Up or down.
     {
-//        ray_position = start_position;
-//        depth_of_field = 18;
         ray_angle += epsilon;
     }
     if (ray_angle > P2 && ray_angle < P3) // Looking left.
     {
-//        ray_position.x = (((int)start_position.x>>6)<<6) - 0.0001f;
         ray_position.x = (int(int(start_position.x)/block_size)*block_size) - 0.0001f;
         ray_position.y = (start_position.x - ray_position.x)*negative_tan + start_position.y;
-//        offset.x = -64;
         offset.x = -block_size;
         offset.y = -offset.x*negative_tan;
     }
     if (ray_angle < P2 || ray_angle > P3 ) // Looking right.
     {
-//        ray_position.x = (((int)start_position.x>>6)<<6) + 64.0f;
         ray_position.x = (int(int(start_position.x)/block_size)*block_size) + block_size;
         ray_position.y = (start_position.x - ray_position.x)*negative_tan + start_position.y;
-//        offset.x = 64;
         offset.x = block_size;
         offset.y = -offset.x*negative_tan;
     }
@@ -107,8 +92,6 @@ const Ray Raycaster::raycast(float ray_angle, const glm::vec2 &start_position) c
 
     while (depth_of_field < 18)
     {
-//        map_xy.x = (int)(ray_position.x) >> 6;
-//        map_xy.y = (int)(ray_position.y) >> 6;
         map_xy.x = (int)(ray_position.x/block_size);
         map_xy.y = (int)(ray_position.y/block_size);
         vertical_map_index = map_xy.y * world_size.x + map_xy.x;
@@ -126,13 +109,24 @@ const Ray Raycaster::raycast(float ray_angle, const glm::vec2 &start_position) c
             distance_vertical = glm::length(start_position - ray_position);
         }
     }
+    const float threshold = 0.5f * this->world.get_block_size();
     if (distance_vertical < distance_horizontal)
     {
-        return {vertical_map_index, vertical_ray, distance_vertical};
+        const float moved_beginning_coordinate = vertical_ray.x - this->world.get_block(vertical_map_index).scaled_world_position.x;
+        if(moved_beginning_coordinate > threshold)
+            return {vertical_map_index, vertical_ray, distance_vertical, direction_left};
+        else
+            return {vertical_map_index, vertical_ray, distance_vertical, direction_right};
     }
     else
     {
-        return {horizontal_map_index, horizontal_ray, distance_horizontal};
+
+        const float moved_beginning_coordinate = horizontal_ray.y - this->world.get_block(horizontal_map_index).scaled_world_position.y;
+        if(moved_beginning_coordinate > threshold)
+            return {horizontal_map_index, horizontal_ray, distance_horizontal, direction_up};
+        else
+            return {horizontal_map_index, horizontal_ray, distance_horizontal, direction_down};
+//        return {horizontal_map_index, horizontal_ray, distance_horizontal, direction_up};
     }
 }
 
