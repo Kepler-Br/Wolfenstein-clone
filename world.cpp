@@ -25,7 +25,7 @@ World::World() {
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -54,12 +54,14 @@ World::World() {
             this->world[i].is_solid_wall = true;
             this->world[i].is_portal = true;
         }
+        this->world[60].up_texture_id = 1;
 //        this->world[27].portal_to_block_id = 93;
 //        this->world[93].portal_to_block_id = 27;
         this->world[i].color = {rand() % 255, rand() % 255, rand() % 255};
     }
     delete[] blocks;
-    this->texture.read("./image_packer/target.tex");
+    this->xyu_texture.read("./image_packer/xyu.tex");
+    this->brick_texture.read("./image_packer/brick.tex");
 }
 
 const glm::ivec2 &World::get_world_dimensions() const

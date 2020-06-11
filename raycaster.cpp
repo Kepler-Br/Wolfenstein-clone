@@ -120,7 +120,6 @@ const Ray Raycaster::raycast(float ray_angle, const glm::vec2 &start_position) c
     }
     else
     {
-
         const float moved_beginning_coordinate = horizontal_ray.y - this->world.get_block(horizontal_map_index).scaled_world_position.y;
         if(moved_beginning_coordinate > threshold)
             return {horizontal_map_index, horizontal_ray, distance_horizontal, direction_up};

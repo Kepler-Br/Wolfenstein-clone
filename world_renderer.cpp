@@ -105,7 +105,8 @@ void World_renderer::render()
         float fixed_length = raycast.ray_length * std::cos(fish_eye_fix);
         float line_height = (124*this->sdl_wrapper.resolution.y) / fixed_length;
         float line_offset = this->sdl_wrapper.resolution.y / 3.0f - line_height / 2.0f + this->player.get_x_view_angle() + this->player.get_y_view_angle();
-        Texture &texture = this->world.texture;
+        Texture &brick_texture = this->world.brick_texture;
+        Texture &xyu_texture = this->world.xyu_texture;
 
         float uv_start = 0.0f;
         float old_height = line_height;
@@ -129,7 +130,27 @@ void World_renderer::render()
         for(float i = 0; i < line_height; i++)
         {
             uv.y += uv_step;
-            const Pixel &pixel = this->world.texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            Pixel pixel;
+            if(raycast.hit_side == direction_up)
+                if(block.up_texture_id == 0)
+                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+                else
+                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            if(raycast.hit_side == direction_down)
+                if(block.down_texture_id == 0)
+                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+                else
+                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            if(raycast.hit_side == direction_left)
+                if(block.left_texture_id == 0)
+                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+                else
+                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            if(raycast.hit_side == direction_right)
+                if(block.right_texture_id == 0)
+                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+                else
+                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
             this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(pixel.r, pixel.g, pixel.b), glm::ivec2(x, line_offset + i));
         }
         x++;

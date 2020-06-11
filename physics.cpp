@@ -43,7 +43,7 @@ const glm::vec3 Physics::handle_wall_colisions(const glm::vec3 &current_position
     {
         glm::vec3 projected = glm::vec3(0);
         glm::vec3 new_velocity = glm::vec3(0);
-        if(min_index == d_right)
+        if(min_index == direction_right)
         {
             constexpr glm::vec3 normal = glm::vec3(1.0f, 0.0f, 0.0f);
             const float dot = glm::dot(velocity, normal);
@@ -52,7 +52,7 @@ const glm::vec3 Physics::handle_wall_colisions(const glm::vec3 &current_position
             else
                 new_velocity = velocity - normal * glm::dot(velocity, normal);
         }
-        if(min_index == d_up)
+        if(min_index == direction_up)
         {
             constexpr glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
             const float dot = glm::dot(velocity, normal);
@@ -61,7 +61,7 @@ const glm::vec3 Physics::handle_wall_colisions(const glm::vec3 &current_position
             else
                 new_velocity = velocity - normal * glm::dot(velocity, normal);
         }
-        if(min_index == d_left)
+        if(min_index == direction_left)
         {
             constexpr glm::vec3 normal = glm::vec3(-1.0f, 0.0f, 0.0f);
             const float dot = glm::dot(velocity, normal);
@@ -70,7 +70,7 @@ const glm::vec3 Physics::handle_wall_colisions(const glm::vec3 &current_position
             else
                 new_velocity = velocity - normal * glm::dot(velocity, normal);
         }
-        if(min_index == d_down)
+        if(min_index == direction_down)
         {
             constexpr glm::vec3 normal = glm::vec3(0.0f, -1.0f, 0.0f);
             const float dot = glm::dot(velocity, normal);
@@ -139,10 +139,10 @@ const glm::vec3 Physics::move(const glm::vec3 &current_position, const glm::vec3
     float min_distance = INFINITY;
     int min_index = 0;
 
-    this->rays[d_right] = this->raycaster.raycast(right, current_position);
-    this->rays[d_up] = this->raycaster.raycast(up, current_position);
-    this->rays[d_left] = this->raycaster.raycast(left, current_position);
-    this->rays[d_down] = this->raycaster.raycast(down, current_position);
+    this->rays[direction_right] = this->raycaster.raycast(right, current_position);
+    this->rays[direction_up] = this->raycaster.raycast(up, current_position);
+    this->rays[direction_left] = this->raycaster.raycast(left, current_position);
+    this->rays[direction_down] = this->raycaster.raycast(down, current_position);
     glm::vec3 new_position = this->handle_wall_colisions(current_position, velocity);
 
     return handle_portals(current_position, new_position);
