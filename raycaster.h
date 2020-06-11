@@ -12,6 +12,7 @@ struct Ray {
     int block_index;
     glm::vec2 ray_position;
     float ray_length;
+    directions hit_side;
 };
 
 class Raycaster {
@@ -24,15 +25,15 @@ public:
     const Ray raycast(const glm::vec2 &ray_direction, const glm::vec2 &start_position) const;
     const Ray raycast_one(float ray_angle, const glm::vec2 &start_position) const;
     const Ray raycast_one(const glm::vec2 &ray_direction, const glm::vec2 &start_position) const;
-    const directions get_block_side(glm::vec2 position) const
-    {
-        if (position.x >= this->world.get_block_size())
-            position.x -= this->world.get_block_size()*std::trunc(position.x/this->world.get_block_size());
-        if (position.y >= this->world.get_block_size())
-            position.y -= this->world.get_block_size()*std::trunc(position.y/this->world.get_block_size());
-
-        return direction_right;
-    }
+//    const directions get_block_side(glm::vec2 position) const
+//    {
+//        if (position.x >= this->world.get_block_size())
+//            position.x -= this->world.get_block_size()*std::trunc(position.x/this->world.get_block_size());
+//        if (position.y >= this->world.get_block_size())
+//            position.y -= this->world.get_block_size()*std::trunc(position.y/this->world.get_block_size());
+//
+//        return direction_up;
+//    }
 };
 
 

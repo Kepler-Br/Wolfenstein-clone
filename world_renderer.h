@@ -10,6 +10,7 @@
 #include "player.h"
 #include "sdl_wrapper.h"
 #include "world_renderer_thread.h"
+#include "types.h"
 #include <thread>
 #include <mutex>
 #include <queue>
@@ -33,9 +34,21 @@ private:
     void render_one_block_view_rays(const glm::vec2 &center, const float &size);
     void render_blocks(const glm::vec2 &center, const float &size, const bool fill_screen);
     void render_player(const glm::vec2 &center, const float &size);
-    float get_block_x_uv(glm::vec2 position)
+    float get_block_x_uv(const Ray &ray, const Block &block)
     {
+//        const Block &block = this->world.get_block(ray.block_index);
+        directions side = ray.hit_side;
+        if(side == direction_right)
+            return (ray.ray_position.y - block.scaled_world_position.y) / this->world.get_block_size();
+        if(side == direction_left)
+            return 1.0f - (ray.ray_position.y - block.scaled_world_position.y) / this->world.get_block_size();
+        if(side == direction_up)
+            return (ray.ray_position.x - block.scaled_world_position.x) / this->world.get_block_size();
+        if(side == direction_down)
+            return 1.0f - (ray.ray_position.x - block.scaled_world_position.x) / this->world.get_block_size();
 
+
+        return ray.ray_position.x / this->world.get_block_size();
     }
 
 public:

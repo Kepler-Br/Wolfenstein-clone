@@ -125,6 +125,7 @@ void World_renderer::render()
         }
 
         glm::vec2 uv = glm::vec2((raycast.ray_position.x - block.scaled_world_position.x) / this->world.get_block_size(), uv_start);
+        uv.x = this->get_block_x_uv(raycast, block);
         for(float i = 0; i < line_height; i++)
         {
             uv.y += uv_step;
