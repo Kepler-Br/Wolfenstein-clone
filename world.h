@@ -31,8 +31,8 @@ private:
     int world_length;
     glm::ivec2 world_dimensions;
     float block_size = int(64.0f/1.5f);
-    Texture texture;
 public:
+    Texture texture;
     World();
     const int &get_world_length() const;
     const Block &get_block(const int index) const;

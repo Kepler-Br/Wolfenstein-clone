@@ -9,15 +9,26 @@
 World::World() {
     this->world_dimensions = {11, 11};
     this->world_length = world_dimensions.x * world_dimensions.y;
+//    int *blocks = new int[this->world_length] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+//                                               1, 0, 0, 0, 1, 2, 1, 0, 1, 0, 1,
+//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+//                                               1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1,
+//                                               1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1,
+//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+//                                               1, 0, 0, 0, 1, 2, 1, 0, 1, 0, 1,
+//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+//                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     int *blocks = new int[this->world_length] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 1, 2, 1, 0, 1, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 1, 2, 1, 0, 1, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     this->world = new Block[this->world_length];
@@ -43,8 +54,8 @@ World::World() {
             this->world[i].is_solid_wall = true;
             this->world[i].is_portal = true;
         }
-        this->world[27].portal_to_block_id = 93;
-        this->world[93].portal_to_block_id = 27;
+//        this->world[27].portal_to_block_id = 93;
+//        this->world[93].portal_to_block_id = 27;
         this->world[i].color = {rand() % 255, rand() % 255, rand() % 255};
     }
     delete[] blocks;

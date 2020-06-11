@@ -20,7 +20,7 @@ private:
     const Raycaster &raycaster;
     const Player &player;
     Sdl_wrapper &sdl_wrapper;
-    float field_of_view = 70.0f*M_PI/180.0f;
+    float field_of_view = 50.0f*M_PI/180.0f;
     int blockiness = 1;
 //    constexpr static int threads_total = 4;
 //    std::thread *threads;
@@ -33,6 +33,10 @@ private:
     void render_one_block_view_rays(const glm::vec2 &center, const float &size);
     void render_blocks(const glm::vec2 &center, const float &size, const bool fill_screen);
     void render_player(const glm::vec2 &center, const float &size);
+    float get_block_x_uv(glm::vec2 position)
+    {
+
+    }
 
 public:
     World_renderer(World &world, const Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper);

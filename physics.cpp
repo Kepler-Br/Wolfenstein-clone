@@ -97,7 +97,7 @@ const glm::vec3 Physics::handle_portals(const glm::vec3 &current_position, const
     const Block &new_block = this->world.get_block(new_block_index);
     glm::vec3 translated_position = new_position;
 //    const glm::vec2 delta = glm::vec2(current_block.world_position - new_block.world_position);
-//    const float delta_angle = atan2(delta.y, delta.x) - this->player.get_view_angle();
+//    const float delta_angle = atan2(delta.y, delta.x) - this->player.get_x_view_angle();
 //    const float delta_angle = -atan2(delta.y, delta.x) + atan2(current_position.y - new_position.y, current_position.x - new_position.x);
 //    const float angle_sin = sin(delta_angle/4);
     if(!new_block.is_portal && current_block.is_portal)

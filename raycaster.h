@@ -6,18 +6,12 @@
 #define WOLFENSHETIN_RAYCASTER_H
 #include <glm/glm.hpp>
 #include "world.h"
+#include "types.h"
 
 struct Ray {
     int block_index;
     glm::vec2 ray_position;
     float ray_length;
-};
-
-enum block_side {
-    right = 0,
-    up,
-    left,
-    down
 };
 
 class Raycaster {
@@ -30,9 +24,14 @@ public:
     const Ray raycast(const glm::vec2 &ray_direction, const glm::vec2 &start_position) const;
     const Ray raycast_one(float ray_angle, const glm::vec2 &start_position) const;
     const Ray raycast_one(const glm::vec2 &ray_direction, const glm::vec2 &start_position) const;
-    const block_side get_block_side(const glm::vec2 &position) const
+    const directions get_block_side(glm::vec2 position) const
     {
-        return right;
+        if (position.x >= this->world.get_block_size())
+            position.x -= this->world.get_block_size()*std::trunc(position.x/this->world.get_block_size());
+        if (position.y >= this->world.get_block_size())
+            position.y -= this->world.get_block_size()*std::trunc(position.y/this->world.get_block_size());
+
+        return direction_right;
     }
 };
 

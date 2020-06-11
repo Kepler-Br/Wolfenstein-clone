@@ -10,6 +10,7 @@ Sdl_wrapper::Sdl_wrapper(const glm::ivec2 &resolution) :
     if(window == nullptr)
         throw std::runtime_error("Cannot create SDL2 window: " + std::string(SDL_GetError()));
 
+
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if(renderer == nullptr)
         throw std::runtime_error("Cannot create SDL2 renderer: " + std::string(SDL_GetError()));

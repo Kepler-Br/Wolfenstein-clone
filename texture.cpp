@@ -46,14 +46,27 @@ const Pixel &Texture::get_pixel(const glm::ivec2 &position) const
         throw std::runtime_error("Tried to access pixel image out of bounds without wrapping set(by ivec2).");
     else if(this->wrap)
     {
-        wrapped_position.x = position.x%this->resolution.x;
-        wrapped_position.y = position.y%this->resolution.y;
+        wrapped_position.x = std::abs(position.x%this->resolution.x);
+        wrapped_position.y = std::abs(position.y%this->resolution.y);
         index = wrapped_position.y * this->resolution.x + wrapped_position.x;
     }
     else
         index = position.y * this->resolution.x + position.x;
+    Pixel &pixel = this->pixels[index];
     return this->pixels[index];
 }
+
+const Pixel &Texture::get_normalized_pixel(const glm::vec2 &position) const
+{
+    glm::ivec2 scaled_position = glm::ivec2(position.x * this->resolution.x, position.y * this->resolution.y);
+//    if(this->wrap)
+    {
+//        scaled_position.x = scaled_position.x % this->resolution.x;
+//        scaled_position.y = scaled_position.y % this->resolution.y;
+    }
+    return this->get_pixel(scaled_position);
+}
+
 
 void Texture::set_wrapping(const bool &wrap)
 {
