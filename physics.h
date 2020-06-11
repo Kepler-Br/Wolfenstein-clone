@@ -20,9 +20,6 @@ private:
     constexpr static float up = M_PI/2.0f;
     constexpr static float left = M_PI;
     constexpr static float down = 3.0f*M_PI/2.0f;
-    enum directions {
-        d_right = 0, d_up, d_left, d_down
-    };
     Ray *rays;
 
     const glm::vec3 handle_wall_colisions(const glm::vec3 &current_position, const glm::vec3 &velocity) const;
