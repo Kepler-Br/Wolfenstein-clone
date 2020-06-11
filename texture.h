@@ -31,6 +31,7 @@ public:
     Texture(const std::string &path);
     Texture() = default;
 
+    void free();
     Pixel *get_pixels() const;
     const Pixel &get_pixel(const uint &index) const;
     const Pixel &get_pixel(const glm::ivec2 &position) const;

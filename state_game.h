@@ -16,6 +16,7 @@
 #include "physics.h"
 #include "input_manager.h"
 #include <SDL2/SDL_image.h>
+#include "texture_holder.h"
 
 class State_game: State_base
 {
@@ -30,6 +31,7 @@ private:
     World_renderer renderer;
     Physics physics;
     Player player;
+    Texture_holder texture_holder;
 
 public:
     State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance);

@@ -16,6 +16,11 @@ Pixel *Texture::get_pixels() const
     return this->pixels;
 }
 
+void Texture::free()
+{
+    delete []this->pixels;
+}
+
 const uint &Texture::get_pixel_count() const
 {
     return this->pixel_count;

@@ -4,6 +4,19 @@
 
 #include "state_game.h"
 
+State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance) :
+        State_base(main_loop, main_loop.get_prev_state()),
+        input_manager(input_manager),
+        raycaster(world),
+        player({68.5f, 68.5f, 0.0f}, 0.0f),
+        renderer(world, raycaster, player, sdl_instance, texture_holder),
+        physics(world, raycaster, player),
+        sdl_wrapper(sdl_instance)
+{
+    this->texture_holder.load("./image_packer/brick.tex", "BRICK");
+    this->texture_holder.load("./image_packer/xyu.tex", "XYU");
+}
+
 void State_game::on_draw()
 {
     const auto &renderer = this->sdl_wrapper.get_renderer();
@@ -24,17 +37,6 @@ void State_game::on_draw()
 //            SDL_RenderDrawPoint(renderer, x, y);
 //        }
 //    }
-}
-
-State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance) :
-        State_base(main_loop, main_loop.get_prev_state()),
-        input_manager(input_manager),
-        raycaster(world),
-        player({68.5f, 68.5f, 0.0f}, 0.0f),
-        renderer(world, raycaster, player, sdl_instance),
-        physics(world, raycaster, player),
-        sdl_wrapper(sdl_instance)
-{
 }
 
 void State_game::engine_update()
