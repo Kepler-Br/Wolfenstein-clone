@@ -4,11 +4,12 @@
 
 #include "world_renderer.h"
 
-World_renderer::World_renderer(World &world, const Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper):
+World_renderer::World_renderer(World &world, const Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper, const Texture_holder &texture_holder):
         world(world),
         raycaster(raycaster),
         player(player),
-        sdl_wrapper(sdl_wrapper)
+        sdl_wrapper(sdl_wrapper),
+        texture_holder(texture_holder)
 {
     const glm::ivec2 &resolution = this->sdl_wrapper.resolution;
 //    this->threads = new std::thread[this->threads_total];
@@ -132,25 +133,25 @@ void World_renderer::render()
             uv.y += uv_step;
             Pixel pixel;
             if(raycast.hit_side == direction_up)
-                if(block.up_texture_id == 0)
-                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
-                else
-                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            {
+                const Texture &texture = texture_holder.get_by_id(block.up_texture_id);
+                pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            }
             if(raycast.hit_side == direction_down)
-                if(block.down_texture_id == 0)
-                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
-                else
-                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            {
+                const Texture &texture = texture_holder.get_by_id(block.down_texture_id);
+                pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            }
             if(raycast.hit_side == direction_left)
-                if(block.left_texture_id == 0)
-                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
-                else
-                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            {
+                const Texture &texture = texture_holder.get_by_id(block.left_texture_id);
+                pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            }
             if(raycast.hit_side == direction_right)
-                if(block.right_texture_id == 0)
-                    pixel = brick_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
-                else
-                    pixel = xyu_texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            {
+                const Texture &texture = texture_holder.get_by_id(block.right_texture_id);
+                pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
+            }
             this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(pixel.r, pixel.g, pixel.b), glm::ivec2(x, line_offset + i));
         }
         x++;

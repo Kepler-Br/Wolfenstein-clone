@@ -11,6 +11,7 @@
 #include "sdl_wrapper.h"
 #include "world_renderer_thread.h"
 #include "types.h"
+#include "texture_holder.h"
 #include <thread>
 #include <mutex>
 #include <queue>
@@ -20,6 +21,7 @@ private:
     World &world;
     const Raycaster &raycaster;
     const Player &player;
+    const Texture_holder &texture_holder;
     Sdl_wrapper &sdl_wrapper;
     float field_of_view = 50.0f*M_PI/180.0f;
     int blockiness = 1;
@@ -52,7 +54,7 @@ private:
     }
 
 public:
-    World_renderer(World &world, const Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper);
+    World_renderer(World &world, const Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper, const Texture_holder &texture_holder);
     ~World_renderer();
     void render();
     void render_map(const bool render_rays, const bool fill_screen, const float size = 1.0f);
