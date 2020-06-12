@@ -1,6 +1,7 @@
 #include "raycaster.h"
 
-raycaster::raycaster()
+raycaster::raycaster(const World &world):
+    world(world)
 {
 
 }
