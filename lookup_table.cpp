@@ -6,7 +6,7 @@ float *Lookup_table::tan_table;
 
 int Lookup_table::clamp_degree(const int &degree)
 {
-    if(degree >= Lookup_table::value_count)
+    if(degree >= 360)
         return degree % 360;
     else if (degree < 0)
         return degree % 360 + 360;
