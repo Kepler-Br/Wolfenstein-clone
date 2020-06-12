@@ -19,7 +19,6 @@ void Main_loop::pop_all_states()
 Main_loop::Main_loop(const glm::ivec2 &resolution)
 {
     this->sdl_instance = Sdl_wrapper(resolution);
-    this->resolution = resolution;
 }
 
 Main_loop::~Main_loop()

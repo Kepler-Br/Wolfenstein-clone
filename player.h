@@ -6,46 +6,40 @@
 #define WOLFENSHETIN_PLAYER_H
 
 #include <glm/glm.hpp>
+#include "lookup_table.h"
 
 class Player
 {
-    float x_view_angle = 0.0f;
-    float y_view_angle = 0.0f;
+    int x_view_angle = 0;
+    int y_view_angle = 0;
     glm::vec3 position;
     glm::vec2 forward;
     void calculate_forward()
     {
-        this->forward = {cos(this->x_view_angle),
-                         sin(this->x_view_angle)};
+        this->forward = {Lookup_table::cos(this->x_view_angle),
+                         Lookup_table::sin(this->x_view_angle)};
     }
 
-    float clamp_angle(float angle)
+    int clamp_angle(int angle)
     {
-        if (angle < 0)
-            angle += 2.0f * M_PI;
-        if (angle > 2.0f * M_PI)
-            angle -= 2.0f * M_PI;
-        return angle;
+        return std::abs(angle)%360;
     }
 public:
 
 
-    const float height = 22;
-    float parameter1 = 0.0f;
+    const int height = 64;
 
-    Player(const glm::vec3 &position, const float look_angle):
-            position(position),
-            x_view_angle(look_angle)
+    Player(const glm::vec3 &position, const int & look_angle):
+        x_view_angle(look_angle),
+        position(position)
     {
         this->calculate_forward();
     }
 
     void set_x_view_angle(const float &angle)
     {
-//        this->x_view_angle = angle;
         this->x_view_angle = this->clamp_angle(angle);
         this->calculate_forward();
-//        this->clamp_angle();
     }
 
     void add_x_view_angle(const float &angle)
