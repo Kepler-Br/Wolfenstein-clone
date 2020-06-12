@@ -30,7 +30,8 @@ class Player
 public:
 
 
-    const float height = 30;
+    const float height = 22;
+    float parameter1 = 0.0f;
 
     Player(const glm::vec3 &position, const float look_angle):
             position(position),

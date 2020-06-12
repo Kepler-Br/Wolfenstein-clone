@@ -23,6 +23,8 @@ struct Block {
     int up_texture_id;
     int left_texture_id;
     int down_texture_id;
+    int floor_texture_id;
+    int ceiling_texture_id;
 };
 
 class World {
@@ -33,8 +35,6 @@ private:
     float block_size = int(64.0f/1.5f);
 
 public:
-    Texture brick_texture;
-    Texture xyu_texture;
     World();
     const int &get_world_length() const;
     const Block &get_block(const int index) const;

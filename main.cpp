@@ -5,7 +5,8 @@
 
 int main()
 {
-    Main_loop main_loop({800, 600});
+//    Main_loop main_loop({800, 600});
+    Main_loop main_loop({640, 480});
     auto *game = new State_game(main_loop, main_loop.get_input_manager(), main_loop.get_sdl_instance());
     main_loop.push_state((State_base *)game);
 //    try

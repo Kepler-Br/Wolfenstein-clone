@@ -71,31 +71,31 @@ void World_renderer::render()
         Block block;
         if(x >= this->sdl_wrapper.resolution.x)
         {
-            x++;
-            continue;
+//            x++;
+            break;
         }
-        if(player_block.is_portal)
-        {
-            Block portal_to_block = this->world.get_block(player_block.portal_to_block_id);
-            glm::vec2 new_position = glm::vec2(this->player.get_position()) - glm::vec2(player_block_position.x*block_size, player_block_position.y*block_size) + portal_to_block.scaled_world_position;
-            raycast = this->raycaster.raycast(xangle, new_position);
-
-            block = this->world.get_block(raycast.block_index);
-        }
-        else
-        {
+//        if(player_block.is_portal)
+//        {
+//            Block portal_to_block = this->world.get_block(player_block.portal_to_block_id);
+//            glm::vec2 new_position = glm::vec2(this->player.get_position()) - glm::vec2(player_block_position.x*block_size, player_block_position.y*block_size) + portal_to_block.scaled_world_position;
+//            raycast = this->raycaster.raycast(xangle, new_position);
+//
+//            block = this->world.get_block(raycast.block_index);
+//        }
+//        else
+//        {
             raycast = this->raycaster.raycast(xangle, this->player.get_position());
             block = this->world.get_block(raycast.block_index);
-            if(block.is_portal)
-            {
-                const float length = raycast.ray_length;
-                Block portal_to_block = this->world.get_block(block.portal_to_block_id);
-                glm::vec2 new_position = raycast.ray_position - block.scaled_world_position + portal_to_block.scaled_world_position;
-                raycast = this->raycaster.raycast(xangle, new_position);
-                raycast.ray_length += length;
-                block = this->world.get_block(raycast.block_index);
-            }
-        }
+//            if(block.is_portal)
+//            {
+//                const float length = raycast.ray_length;
+//                Block portal_to_block = this->world.get_block(block.portal_to_block_id);
+//                glm::vec2 new_position = raycast.ray_position - block.scaled_world_position + portal_to_block.scaled_world_position;
+//                raycast = this->raycaster.raycast(xangle, new_position);
+//                raycast.ray_length += length;
+//                block = this->world.get_block(raycast.block_index);
+//            }
+//        }
 
         world.set_block_seen(true, raycast.block_index);
         float fish_eye_fix = this->player.get_x_view_angle() - xangle;
@@ -104,11 +104,9 @@ void World_renderer::render()
         if (fish_eye_fix > 2*M_PI)
             fish_eye_fix -= 2*M_PI;
         float fixed_length = raycast.ray_length * std::cos(fish_eye_fix);
-        float line_height = (124*this->sdl_wrapper.resolution.y) / fixed_length;
-        float line_offset = this->sdl_wrapper.resolution.y / 3.0f - line_height / 2.0f + this->player.get_x_view_angle() + this->player.get_y_view_angle();
-        Texture &brick_texture = this->world.brick_texture;
-        Texture &xyu_texture = this->world.xyu_texture;
-
+        float line_height = (128*this->sdl_wrapper.resolution.y) / fixed_length;
+        float line_offset = this->sdl_wrapper.resolution.x / 3.0f - line_height / 4.0f;// + this->player.get_y_view_angle();
+//        float line_offset = line_height / 4.0f;
         float uv_start = 0.0f;
         float old_height = line_height;
         float uv_step = (std::abs(uv_start)+1.0f)/old_height;
@@ -137,23 +135,107 @@ void World_renderer::render()
                 const Texture &texture = texture_holder.get_by_id(block.up_texture_id);
                 pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
             }
-            if(raycast.hit_side == direction_down)
+            else if(raycast.hit_side == direction_down)
             {
                 const Texture &texture = texture_holder.get_by_id(block.down_texture_id);
                 pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
             }
-            if(raycast.hit_side == direction_left)
+            else if(raycast.hit_side == direction_left)
             {
                 const Texture &texture = texture_holder.get_by_id(block.left_texture_id);
                 pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
             }
-            if(raycast.hit_side == direction_right)
+            else //(raycast.hit_side == direction_right)
             {
                 const Texture &texture = texture_holder.get_by_id(block.right_texture_id);
                 pixel = texture.get_normalized_pixel(glm::vec2(uv.x, uv.y));
             }
             this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(pixel.r, pixel.g, pixel.b), glm::ivec2(x, line_offset + i));
         }
+        const int bottom_pixel = int(line_height + line_offset);
+        glm::vec3 floor_ray_position =
+                glm::vec3(this->player.get_position().x,
+                          this->player.get_position().y,
+                          this->player.height);
+
+
+        for (int i = bottom_pixel; i < this->sdl_wrapper.resolution.y; i++)
+        {
+//            float ratio=(this->player.height)/(i-(this->sdl_wrapper.resolution.y/2.0f));
+//            float player_distance_to_projection_plane = 227.0f;
+//            float diagonal_distance=floor((player_distance_to_projection_plane*ratio)/
+//                                        (std::cos(this->player.get_x_view_angle()-xangle)));
+//            float y_end = floor(diagonal_distance * sin(xangle));
+//            float x_end = floor(diagonal_distance * cos(xangle));
+//            x_end+=this->player.get_position().x;
+//            y_end+=this->player.get_position().y;
+//            float cell_x = floor(x_end / this->world.get_block_size());
+//            float cell_y = floor(y_end / this->world.get_block_size());
+//            if(cell_x < this->world.get_world_dimensions().x &&
+//               cell_y < this->world.get_world_dimensions().y &&
+//               cell_x >= 0 && cell_y >= 0)
+//            {
+//                float tile_row = float((int)y_end%(int)this->world.get_block_size()) / this->world.get_block_size();
+//                float tile_column = float((int)x_end%(int)this->world.get_block_size()) / this->world.get_block_size();
+//                const Pixel &t = this->texture_holder.get_by_id(0).get_normalized_pixel(glm::vec2(tile_row, tile_column));
+//                this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(t.r, t.g, t.b), glm::ivec2(x, i));
+//            }
+//            float line_height = (128*this->sdl_wrapper.resolution.y) / fixed_length;
+//            float line_offset = this->sdl_wrapper.resolution.x / 3.0f - line_height / 2.0f;// + this->player.get_y_view_angle();
+            float p_height = (128*this->sdl_wrapper.resolution.y)/ fixed_length;
+            float csn = std::abs(xangle-this->player.get_x_view_angle());
+//            float ratio = this->player.height/float(float(i)-float(this->sdl_wrapper.resolution.y)/2.0f);
+            float ratio = p_height/float(float(i)-float(this->sdl_wrapper.resolution.y)/2.0f);
+            float player_distance_to_projection_plane = 227.0f;
+            float distance = ratio*player_distance_to_projection_plane;
+//            float distance = (this->player.height*player_distance_to_projection_plane)/(float(i-int(this->sdl_wrapper.resolution.y/2.0f)));
+            distance /= cos(csn);
+            glm::vec2 end(distance * sin(xangle),
+                          distance * cos(xangle));
+//            std::cout << end.x/this->world.get_block_size() << " " << end.y/this->world.get_block_size() << std::endl;
+            end.x += this->player.get_position().x;
+            end.y += this->player.get_position().y;
+            glm::ivec2 cell(end.x / this->world.get_block_size(), end.y / this->world.get_block_size());
+            if(cell.x < this->world.get_world_dimensions().x &&
+               cell.y < this->world.get_world_dimensions().y &&
+               cell.x >= 0 && cell.y >= 0)
+            {
+
+                float row = end.x -floor(end.x/this->world.get_block_size()) *this->world.get_block_size();
+//                std::cout << end.x << "-" << this->world.get_block_size() << "=" << row << "(" << (int)end.x % (int)this->world.get_block_size() << ")" << std::endl;
+                float column = end.y -floor(end.y/this->world.get_block_size()) *this->world.get_block_size();
+
+                row /= this->world.get_block_size();
+                column /= this->world.get_block_size();
+                const Block &floor_cell = this->world.get_block(cell);
+                const Pixel &t = this->texture_holder.get_by_id(floor_cell.floor_texture_id).get_normalized_pixel(glm::vec2(row, column));
+                this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(t.r, t.g, t.b), glm::ivec2(x, i));
+            }
+//            end /= this->world.get_block_size();
+
+            //            std::cout << end.x << " " << end.y << std::endl;
+//            glm::vec3 floor_pixel_position =
+//                    glm::vec3(this->player.get_position().x + cos(xangle),
+//                              this->player.get_position().y + sin(xangle),
+//                              this->player.height - (float)i);
+
+//            glm::vec3 n = glm::normalize(floor_ray_position - floor_pixel_position);
+
+//            distance /= cos(this->player.get_x_view_angle()-xangle);
+//            n *= distance;
+//            n /= this->world.get_block_size();
+//            const Pixel &t = this->texture_holder.get_by_id(0).get_normalized_pixel(glm::vec2(n.x, n.y));
+
+
+//            this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(t.r, t.g, t.b), glm::ivec2(x, i));
+
+//            this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(distance*255, distance*255, distance*255), glm::ivec2(x, i));
+        }
+//        const int top_pixel = int(line_offset);
+//        for (int i = this->sdl_wrapper.resolution.y-1; i > top_pixel; i++)
+//        {
+//            this->sdl_wrapper.set_framebuffer_pixel(glm::ivec3(255, 0, 255), glm::ivec2(x, i));
+//        }
         x++;
     }
     this->sdl_wrapper.unlock_framebuffer();
