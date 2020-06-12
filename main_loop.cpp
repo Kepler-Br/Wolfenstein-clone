@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "main_loop.h"
 #include <cmath>
+#include <stdexcept>
 
 void Main_loop::pop_all_states()
 {

@@ -2,9 +2,8 @@
 #define INPUTMANAGER_H
 
 #include <map>
-
 #include <SDL2/SDL.h>
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 
 
 class Input_manager

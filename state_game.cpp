@@ -8,8 +8,10 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
         State_base(main_loop, main_loop.get_prev_state()),
         sdl_wrapper(sdl_instance),
         input_manager(input_manager),
-        player({68.5f, 68.5f, 0.0f}, 0.0f),
-        texture_holder(10)
+        player({100, 160}, 360),
+        texture_holder(10),
+        raycaster(world),
+        renderer(world, sdl_wrapper, player, raycaster)
 {
     this->texture_holder.load("./image_packer/RW24_2.tex", "WALL");
     this->texture_holder.load("./image_packer/DOOR2_4.tex", "DOOR");
@@ -22,14 +24,10 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
 
 void State_game::on_draw()
 {
-    const auto &renderer = this->sdl_wrapper.get_renderer();
+    auto *renderer = this->sdl_wrapper.get_renderer();
+
     this->sdl_wrapper.set_color(255, 255, 255);
-    for(int x = -500; x < 1000; x++)
-    {
-        SDL_RenderDrawPointF(renderer, x/2+500/2+10, Lookup_table::tan(x)*100+150);
-    }
-
-
+    this->renderer.draw_map();
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
 
 }
@@ -43,11 +41,12 @@ void State_game::on_event()
 {
     const float deltatime = this->main_loop.get_deltatime();
     const glm::ivec2 mouse_delta = this->input_manager.getDeltaMouseCoord();
-    this->player.add_x_view_angle(mouse_delta.x/500.0f);
-    this->player.add_y_view_angle(-mouse_delta.y*1.8f);
+//    this->player.add_x_view_angle(mouse_delta.x/500.0f);
+//    this->player.add_y_view_angle(-mouse_delta.y*1.8f);
     if(this->input_manager.isKeyDown(SDLK_w))
     {
-//        glm::vec2 velocity = 100.0f * this->player.get_forward() * deltatime;
+//        glm::ivec2 velocity = float(this->player.get_speed()) * (glm::vec2)(this->player.get_forward()) * deltatime;
+//        this->player.add_position(velocity);
 //        if(this->is_player_running)
 //            velocity *= 2.0f;
 //        glm::vec3 new_position = this->physics.move(this->player.get_position(), glm::vec3(velocity, 0.0f));
@@ -55,6 +54,8 @@ void State_game::on_event()
     }
     if(this->input_manager.isKeyDown(SDLK_s))
     {
+//        glm::ivec2 velocity = float(this->player.get_speed()) * (glm::vec2)(this->player.get_forward()) * deltatime;
+//        this->player.add_position(-velocity);
 //        glm::vec2 velocity = -100.0f * this->player.get_forward() * deltatime;
 //        if(this->is_player_running)
 //            velocity *= 2.0f;
@@ -64,6 +65,9 @@ void State_game::on_event()
     if(this->input_manager.isKeyDown(SDLK_a))
     {
 //        const glm::vec2 right = glm::vec2(-this->player.get_forward().y, this->player.get_forward().x);
+//        glm::ivec2 velocity = float(this->player.get_speed()) * right * deltatime;
+//        this->player.add_position(velocity);
+//        const glm::vec2 right = glm::vec2(-this->player.get_forward().y, this->player.get_forward().x);
 //        glm::vec2 velocity = -100.0f * right * deltatime;
 //        if(this->is_player_running)
 //            velocity *= 2.0f;
@@ -72,6 +76,9 @@ void State_game::on_event()
     }
     if(this->input_manager.isKeyDown(SDLK_d))
     {
+//        const glm::vec2 left = glm::vec2(this->player.get_forward().y, -this->player.get_forward().x);
+//        glm::ivec2 velocity = float(this->player.get_speed()) * left * deltatime;
+//        this->player.add_position(velocity);
 //        const glm::vec2 right = glm::vec2(this->player.get_forward().y, -this->player.get_forward().x);
 //        glm::vec2 velocity = -100.0f * right * deltatime;
 //        if(this->is_player_running)
@@ -80,13 +87,23 @@ void State_game::on_event()
 //        this->player.set_position(new_position);
     }
     if(this->input_manager.isKeyDown(SDLK_LEFT))
-        this->player.add_x_view_angle(-M_PI / 1.0f * deltatime);
+    {
+        this->player.add_x_view_angle(52);
+        const int angle = this->player.get_x_view_angle();
+        if (angle<1920)
+            this->player.add_x_view_angle(-1920);
+    }
     if(this->input_manager.isKeyDown(SDLK_RIGHT))
-        this->player.add_x_view_angle(M_PI / 1.0f * deltatime);
-    if(this->input_manager.isKeyDown(SDLK_UP))
-        this->player.add_y_view_angle(640 * deltatime);
-    if(this->input_manager.isKeyDown(SDLK_DOWN))
-        this->player.add_y_view_angle(-640 * deltatime);
+    {
+        this->player.add_x_view_angle(-52);
+        const int angle = this->player.get_x_view_angle();
+        if (angle<0)
+            this->player.add_x_view_angle(1920);
+    }
+//    if(this->input_manager.isKeyDown(SDLK_UP))
+//        this->player.add_y_view_angle(640 * deltatime);
+//    if(this->input_manager.isKeyDown(SDLK_DOWN))
+//        this->player.add_y_view_angle(-640 * deltatime);
     if(this->input_manager.isKeyDown(SDLK_ESCAPE))
         this->main_loop.stop();
     if(this->input_manager.isEventPending(SDL_QUIT))
@@ -117,4 +134,9 @@ void State_game::on_predraw()
 void State_game::on_postdraw()
 {
     this->sdl_wrapper.present();
+}
+
+void State_game::preload()
+{
+
 }

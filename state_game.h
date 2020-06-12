@@ -14,6 +14,8 @@
 #include "input_manager.h"
 #include <SDL2/SDL_image.h>
 #include "texture_holder.h"
+#include "renderer.h"
+#include "raycaster.h"
 
 class State_game: State_base
 {
@@ -25,6 +27,9 @@ private:
     Input_manager &input_manager;
     Player player;
     Texture_holder texture_holder;
+    World world;
+    Raycaster raycaster;
+    Renderer renderer;
 
 public:
     State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance);
@@ -34,6 +39,7 @@ public:
     void on_predraw() override;
     void on_draw() override;
     void on_postdraw() override;
+    void preload() override;
 };
 
 
