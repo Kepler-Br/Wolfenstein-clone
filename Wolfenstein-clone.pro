@@ -4,11 +4,9 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        *.cpp \
-        raycaster.cpp
+        *.cpp
 
 HEADERS += \
-        *.h \
-        raycaster.h
+        *.h
 
 LIBS += -lSDL2 -lpthread

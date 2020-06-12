@@ -30,6 +30,7 @@ public:
     virtual void on_predraw() = 0;
     virtual void on_draw() = 0;
     virtual void on_postdraw() = 0;
+    virtual void preload() = 0;
 };
 
 #endif //WOLFENSHETIN_STATE_BASE_H

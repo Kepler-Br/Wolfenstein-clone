@@ -2,10 +2,8 @@
 #define WOLFENSHETIN_MAIN_LOOP_H
 
 #include "sdl_wrapper.h"
-#include <vector>
 #include <stack>
 #include "input_manager.h"
-#include <glm/glm.hpp>
 #include "state_base.h"
 
 class Main_loop {

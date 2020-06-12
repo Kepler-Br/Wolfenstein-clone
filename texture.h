@@ -6,7 +6,7 @@
 #define WOLFENSHETIN_TEXTURE_H
 
 #include <string>
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 
 struct Pixel
 {
