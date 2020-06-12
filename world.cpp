@@ -25,7 +25,7 @@ World::World() {
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -41,7 +41,8 @@ World::World() {
                           scaled_world_position,
                           glm::ivec3(255, 255, 255),
                           true, false, true, false, false, false,
-                          0, 0, 0, 0, 0};
+                          0, 0, 0, 0, 0,
+                          rand()%5, 0};
         if (blocks[i] == 0)
             this->world[i].is_solid_wall = false;
         else if (blocks[i] == 1)
@@ -60,8 +61,6 @@ World::World() {
         this->world[i].color = {rand() % 255, rand() % 255, rand() % 255};
     }
     delete[] blocks;
-    this->xyu_texture.read("./image_packer/xyu.tex");
-    this->brick_texture.read("./image_packer/brick.tex");
 }
 
 const glm::ivec2 &World::get_world_dimensions() const

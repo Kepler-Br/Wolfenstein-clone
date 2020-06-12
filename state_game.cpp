@@ -13,8 +13,13 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
         physics(world, raycaster, player),
         sdl_wrapper(sdl_instance)
 {
-    this->texture_holder.load("./image_packer/brick.tex", "BRICK");
-    this->texture_holder.load("./image_packer/xyu.tex", "XYU");
+    this->texture_holder.load("./image_packer/RW24_2.tex", "WALL");
+    this->texture_holder.load("./image_packer/DOOR2_4.tex", "DOOR");
+    this->texture_holder.load("./image_packer/WALL02_3.tex", "WALL2");
+    this->texture_holder.load("./image_packer/WALL69_9.tex", "WALL3");
+    this->texture_holder.load("./image_packer/WALL03_7.tex", "WALL4");
+//    SDL_ShowCursor(SDL_DISABLE);
+//    SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 void State_game::on_draw()
@@ -47,6 +52,13 @@ void State_game::engine_update()
 void State_game::on_event()
 {
     const float deltatime = this->main_loop.get_deltatime();
+    const glm::ivec2 mouse_delta = this->input_manager.getDeltaMouseCoord();
+    this->player.add_x_view_angle(mouse_delta.x/500.0f);
+    this->player.add_y_view_angle(-mouse_delta.y*1.8f);
+    if(this->input_manager.isKeyDown(SDLK_q))
+        this->player.parameter1 += 100.0f * deltatime;
+    if(this->input_manager.isKeyDown(SDLK_e))
+        this->player.parameter1 -= 100.0f * deltatime;
     if(this->input_manager.isKeyDown(SDLK_w))
     {
         glm::vec2 velocity = 100.0f * this->player.get_forward() * deltatime;
