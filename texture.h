@@ -23,7 +23,7 @@ private:
     bool wrap = true;
     Pixel *pixels = nullptr;
     glm::ivec2 resolution;
-    uint pixel_count;
+    size_t pixel_count;
 
     void read_file(const std::string &path);
 
@@ -36,9 +36,9 @@ public:
     const Pixel &get_pixel(const uint &index) const;
     const Pixel &get_pixel(const glm::ivec2 &position) const;
     const Pixel &get_normalized_pixel(const glm::vec2 &position) const;
-    const uint &get_pixel_count() const;
+    const size_t &get_pixel_count() const;
     const glm::ivec2 &get_resolution() const;
-    const bool is_transparent() const;
+    bool is_transparent() const;
     void set_wrapping(const bool &wrap);
     void read(const std::string &path);
 };

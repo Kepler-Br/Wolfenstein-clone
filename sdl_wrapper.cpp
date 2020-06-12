@@ -3,21 +3,8 @@
 Sdl_wrapper::Sdl_wrapper(const glm::ivec2 &resolution) :
         resolution(resolution)
 {
-    if ( SDL_Init(SDL_INIT_VIDEO) < 0 )
-        throw std::runtime_error("Unable to init SDL: " + std::string(SDL_GetError()));
-
-    window = SDL_CreateWindow("Wolfenstein", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resolution.x, resolution.y, SDL_WINDOW_SHOWN);
-    if(window == nullptr)
-        throw std::runtime_error("Cannot create SDL2 window: " + std::string(SDL_GetError()));
-
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if(renderer == nullptr)
-        throw std::runtime_error("Cannot create SDL2 renderer: " + std::string(SDL_GetError()));
-    this->pixel_count = this->resolution.x * this->resolution.y;
-    this->framebuffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, resolution.x, resolution.y);
-    if(!this->framebuffer)
-        throw std::runtime_error("Cannot create framebuffer texture: " + std::string(SDL_GetError()));
+    this->init_sdl();
+    this->calculate_resolution_center();
 }
 
 SDL_Window *Sdl_wrapper::get_window() const
@@ -106,6 +93,11 @@ void Sdl_wrapper::set_framebuffer_pixel(const glm::ivec3 &color, const glm::ivec
 void Sdl_wrapper::set_color(const glm::ivec3 &color)
 {
     SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+}
+
+void Sdl_wrapper::set_color(const uint8_t &red, const uint8_t &green, const uint8_t &blue)
+{
+    SDL_SetRenderDrawColor(this->renderer, red, green, blue, SDL_ALPHA_OPAQUE);
 }
 
 void Sdl_wrapper::set_pixel(const glm::ivec2 &position)

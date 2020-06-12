@@ -1,7 +1,3 @@
-//
-// Created by kepler-br on 6/2/20.
-//
-
 #ifndef WOLFENSHETIN_MAIN_LOOP_H
 #define WOLFENSHETIN_MAIN_LOOP_H
 
@@ -14,7 +10,6 @@
 
 class Main_loop {
 private:
-    glm::ivec2 resolution;
     float deltatime;
     int max_fps = 30;
     bool is_running = false;
@@ -26,9 +21,8 @@ private:
     void pop_all_states();
     float calc_deltatime();
     void limit_fps();
+
 public:
-
-
     Main_loop(const glm::ivec2 &resolution);
     ~Main_loop();
 
