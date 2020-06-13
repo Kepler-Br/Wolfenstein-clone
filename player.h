@@ -14,8 +14,8 @@ class Player
     int y_view_angle = 0;
     int distance_to_projection_plane = 277;
     int height = 32;
-    int speed = 16;
-    glm::ivec2 position;
+    int speed = 64;
+    glm::vec2 position;
 //    glm::vec2 forward;
 //    void calculate_forward();
 
@@ -29,9 +29,9 @@ public:
     void set_y_view_angle(const float &degree);
     void add_y_view_angle(const float &degree);
     float get_y_view_angle() const;
-    const glm::ivec2 &get_position() const;
-    void set_position(const glm::ivec2 &position);
-    void add_position(const glm::ivec2 &position);
+    const glm::vec2 &get_position() const;
+    void set_position(const glm::vec2 &position);
+    void add_position(const glm::vec2 &position);
 //    const glm::vec2 &get_forward() const;
     int get_distance_to_projection_plane() const;
     int get_height() const;

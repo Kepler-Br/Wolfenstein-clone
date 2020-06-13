@@ -146,3 +146,8 @@ float Lookup_table::y_step(const int &degree)
 {
     return this->y_step_table[clamp_degree(degree)];
 }
+
+float Lookup_table::fish(const int &column)
+{
+    return this->fish_table[column];
+}
