@@ -47,6 +47,7 @@ public:
     float itan(const int &degree);
     float x_step(const int &degree);
     float y_step(const int &degree);
+    float fish(const int &column);
 };
 
 #endif //WOLFENSTEIN_LOOKUP_TABLE_H

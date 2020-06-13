@@ -1,41 +1,38 @@
 #include "raycaster.h"
 
 #include <iostream> // DELETEME
-Raycaster::Raycaster(const World &world):
-    world(world)
+Raycaster::Raycaster(const World &world, Lookup_table &lookup_table):
+    world(world),
+    lookup(lookup_table)
 {
-    lookup.init(64, 320);
 }
 
-Ray Raycaster::cast(glm::ivec2 position, const int degree)
+Ray Raycaster::cast(glm::vec2 position, const int degree)
 {
-    double verticalGrid;        // horizotal or vertical coordinate of intersection
-    double horizontalGrid;      // theoritically, this will be multiple of TILE_SIZE
+    float verticalGrid;        // horizotal or vertical coordinate of intersection
+    float horizontalGrid;      // theoritically, this will be multiple of TILE_SIZE
                              // , but some trick did here might cause
                              // the values off by 1
-    double distToNextVerticalGrid; // how far to the next bound (this is multiple of
-    double distToNextHorizontalGrid; // tile size)
-    int xIntersection;  // x and y intersections
-    int yIntersection;
-    int distToNextXIntersection;
-    int distToNextYIntersection;
+    float distToNextVerticalGrid; // how far to the next bound (this is multiple of
+    float distToNextHorizontalGrid; // tile size)
+    float xIntersection;  // x and y intersections
+    float yIntersection;
+    float distToNextXIntersection;
+    float distToNextYIntersection;
 
     int xGridIndex;        // the current cell that the ray is in
     int yGridIndex;
 
-    double distToVerticalGridBeingHit;      // the distance of the x and y ray intersections from
-    double distToHorizontalGridBeingHit;      // the viewpoint
+    float distToVerticalGridBeingHit;      // the distance of the x and y ray intersections from
+    float distToHorizontalGridBeingHit;      // the viewpoint
 
-    int castArc, castColumn = 0;
+    int castArc;
     const int block_size = this->world.get_block_size();
     castArc = degree;
     castArc = int(degree);
 
     if (castArc>=this->lookup.angle360)
         castArc-=this->lookup.angle360;
-//    castArc = 300;
-//    position.x = 100;
-//    position.y = 160;
     // Ray is between 0 to 180 degree (1st and 2nd quadrant).
     if (castArc < 0)
     {
@@ -49,6 +46,7 @@ Ray Raycaster::cast(glm::ivec2 position, const int degree)
         // wall) that is in front of the player (this is in pixel unit)
         // ROUNDED DOWN
         horizontalGrid = floor(position.y/block_size)*block_size  + block_size;
+//        horizontalGrid = (position.y/block_size)*block_size  + block_size;
 
         // compute distance to the next horizontal wall
         distToNextHorizontalGrid = block_size;
@@ -65,6 +63,7 @@ Ray Raycaster::cast(glm::ivec2 position, const int degree)
     else
     {
         horizontalGrid = floor(position.y/block_size)*block_size;
+//        horizontalGrid = (position.y/block_size)*block_size;
         distToNextHorizontalGrid = -block_size;
 
         float xtemp = this->lookup.itan(castArc)*(horizontalGrid - position.y);
@@ -118,9 +117,10 @@ Ray Raycaster::cast(glm::ivec2 position, const int degree)
     if (castArc < this->lookup.angle90 || castArc > this->lookup.angle270)
     {
         verticalGrid = block_size + floor(position.x/block_size)*block_size;
+//        verticalGrid = block_size + (position.x/block_size)*block_size;
         distToNextVerticalGrid = block_size;
 
-        int ytemp = this->lookup.tan(castArc)*(verticalGrid - position.x);
+        float ytemp = this->lookup.tan(castArc)*(verticalGrid - position.x);
         yIntersection = ytemp + position.y;
 
     }
@@ -128,9 +128,10 @@ Ray Raycaster::cast(glm::ivec2 position, const int degree)
     else
     {
         verticalGrid = floor(position.x/block_size)*block_size;
+//        verticalGrid = (position.x/block_size)*block_size;
         distToNextVerticalGrid = -block_size;
 
-        int ytemp = this->lookup.tan(castArc)*(verticalGrid - position.x);
+        float ytemp = this->lookup.tan(castArc)*(verticalGrid - position.x);
         yIntersection = ytemp + position.y;
 
         verticalGrid--;
@@ -160,7 +161,6 @@ Ray Raycaster::cast(glm::ivec2 position, const int degree)
                 distToVerticalGridBeingHit = 99999999.0f;
                 break;
             }
-//            else if (this.fMap.charAt(mapIndex)!='O')
             else if (this->world.get_block(mapIndex).is_solid_wall)
             {
                 distToVerticalGridBeingHit =(yIntersection-position.y)*this->lookup.isin(castArc);
@@ -182,12 +182,4 @@ Ray Raycaster::cast(glm::ivec2 position, const int degree)
         return {0, {verticalGrid, yIntersection}, (float)distToVerticalGridBeingHit, direction_right};
 
     }
-//    struct Ray
-//    {
-//        size_t block_id;
-//        glm::ivec2 position;
-//        float length;
-//        Directions hit_side;
-//    };
-
 }

@@ -64,17 +64,17 @@ float Player::get_y_view_angle() const
     return this->y_view_angle;
 }
 
-const glm::ivec2 &Player::get_position() const
+const glm::vec2 &Player::get_position() const
 {
     return this->position;
 }
 
-void Player::set_position(const glm::ivec2 &position)
+void Player::set_position(const glm::vec2 &position)
 {
     this->position = position;
 }
 
-void Player::add_position(const glm::ivec2 &position)
+void Player::add_position(const glm::vec2 &position)
 {
     this->position.x += position.x;
     this->position.y += position.y;

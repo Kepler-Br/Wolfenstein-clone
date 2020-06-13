@@ -30,6 +30,7 @@ private:
     World world;
     Raycaster raycaster;
     Renderer renderer;
+    Lookup_table lookup;
 
 public:
     State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance);

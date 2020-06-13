@@ -7,10 +7,10 @@
 class Raycaster
 {
     const World &world;
-    Lookup_table lookup;
+    Lookup_table &lookup;
 public:
-    Raycaster(const World& world);
-    Ray cast(glm::ivec2 position, const int degree);
+    Raycaster(const World& world, Lookup_table &lookup_table);
+    Ray cast(glm::vec2 position, const int degree);
 };
 
 #endif // RAYCASTER_H
