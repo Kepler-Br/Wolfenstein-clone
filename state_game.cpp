@@ -11,7 +11,7 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
         player({100, 160}, 360),
         texture_holder(10),
         raycaster(world, lookup),
-        renderer(world, sdl_wrapper, player, raycaster, lookup)
+        renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder)
 {
     this->texture_holder.load("./image_packer/RW24_2.tex", "WALL");
     this->texture_holder.load("./image_packer/DOOR2_4.tex", "DOOR");
@@ -21,17 +21,6 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
     this->lookup.init(this->world.get_block_size(), this->sdl_wrapper.get_resolution().x);
 //    SDL_ShowCursor(SDL_DISABLE);
 //    SDL_SetRelativeMouseMode(SDL_TRUE);
-}
-
-void State_game::on_draw()
-{
-    auto *renderer = this->sdl_wrapper.get_renderer();
-
-    this->sdl_wrapper.set_color(255, 255, 255);
-    this->renderer.draw_map();
-    this->renderer.draw_world();
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-
 }
 
 void State_game::engine_update()
@@ -128,10 +117,33 @@ void State_game::on_update()
 void State_game::on_predraw()
 {
     this->sdl_wrapper.clear();
+
+//    this->sdl_wrapper.clear_framebuffer();
+}
+
+void State_game::on_draw()
+{
+    auto *renderer = this->sdl_wrapper.get_renderer();
+
+    this->sdl_wrapper.set_color(255, 255, 255);
+//    this->renderer.draw_world();
+
+
+    this->sdl_wrapper.lock_framebuffer();
+    this->sdl_wrapper.clear_framebuffer();
+    this->renderer.draw_world();
+    this->sdl_wrapper.unlock_framebuffer();
+    this->sdl_wrapper.put_framebuffer();
+//    this->renderer.draw_map();
+
+//    this->renderer.draw_map();
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+
 }
 
 void State_game::on_postdraw()
 {
+
     this->sdl_wrapper.present();
 }
 

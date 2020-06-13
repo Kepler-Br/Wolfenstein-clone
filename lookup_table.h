@@ -21,7 +21,6 @@ class Lookup_table
     int block_size;
 
     int clamp_degree(const int &degree);
-    void init_angles(const int window_width);
     void fill_step_table(const int i);
     void fill_angles(const int window_width);
 public:

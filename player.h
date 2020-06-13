@@ -12,9 +12,9 @@ class Player
 {
     int x_view_angle = 0;
     int y_view_angle = 0;
-    int distance_to_projection_plane = 277;
+    int distance_to_projection_plane = 270;
     int height = 32;
-    int speed = 64;
+    int speed = 64*2;
     glm::vec2 position;
 //    glm::vec2 forward;
 //    void calculate_forward();

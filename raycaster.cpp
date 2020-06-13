@@ -23,13 +23,16 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
     int xGridIndex;        // the current cell that the ray is in
     int yGridIndex;
 
+    int xMapIndex;
+    int yMapIndex;
+
     float distToVerticalGridBeingHit;      // the distance of the x and y ray intersections from
     float distToHorizontalGridBeingHit;      // the viewpoint
 
     int castArc;
     const int block_size = this->world.get_block_size();
     castArc = degree;
-    castArc = int(degree);
+//    castArc = int(degree);
 
     if (castArc>=this->lookup.angle360)
         castArc-=this->lookup.angle360;
@@ -38,7 +41,6 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
     {
         castArc = this->lookup.angle360 + castArc;
     }
-//std::cout << castArc << std::endl;
     // Ray is facing down
     if (castArc > this->lookup.angle0 && castArc < this->lookup.angle180)
     {
@@ -63,7 +65,6 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
     else
     {
         horizontalGrid = floor(position.y/block_size)*block_size;
-//        horizontalGrid = (position.y/block_size)*block_size;
         distToNextHorizontalGrid = -block_size;
 
         float xtemp = this->lookup.itan(castArc)*(horizontalGrid - position.y);
@@ -84,6 +85,7 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
         distToNextXIntersection = this->lookup.x_step(castArc);
         while (true)
         {
+            // compute current map position to inspect
             xGridIndex = floor(xIntersection/block_size);
             yGridIndex = floor(horizontalGrid/block_size);
             int mapIndex=floor(yGridIndex*this->world.get_world_dimensions().x+xGridIndex);
@@ -97,10 +99,10 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
                 break;
             }
             // If the grid is not an Opening, then stop
-//            else if (this.fMap.charAt(mapIndex)!='O')
-            if(this->world.get_block(mapIndex).is_solid_wall)
+            else if(this->world.get_block(mapIndex).is_solid_wall)
             {
-                distToHorizontalGridBeingHit  = (xIntersection-position.x)*this->lookup.icos(castArc);
+                distToHorizontalGridBeingHit = (xIntersection-position.x)*this->lookup.icos(castArc);
+                xMapIndex = mapIndex;
                 break;
             }
             // Else, keep looking.  At this point, the ray is not blocked, extend the ray to the next grid
@@ -109,6 +111,7 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
                 xIntersection += distToNextXIntersection;
                 horizontalGrid += distToNextHorizontalGrid;
             }
+
         }
     }
 
@@ -163,7 +166,8 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
             }
             else if (this->world.get_block(mapIndex).is_solid_wall)
             {
-                distToVerticalGridBeingHit =(yIntersection-position.y)*this->lookup.isin(castArc);
+                distToVerticalGridBeingHit = (yIntersection-position.y)*this->lookup.isin(castArc);
+                yMapIndex = mapIndex;
                 break;
             }
             else
@@ -173,13 +177,52 @@ Ray Raycaster::cast(glm::vec2 position, const int degree)
             }
         }
     }
+    const float threshold = 0.5f * this->world.get_block_size();
     if(distToHorizontalGridBeingHit < distToVerticalGridBeingHit)
     {
-        return {0, {xIntersection, horizontalGrid}, (float)distToHorizontalGridBeingHit, direction_right};
+//        float x_block = this->world.get_block(xGridIndex).scaled_world_position.x;
+//        float test2 = this->world.get_block(yGridIndex).scaled_world_position.x;
+//        const float moved_beginning_coordinate = xIntersection - this->world.get_block(xGridIndex).scaled_world_position.x;
+//        std::cout << "xGridIndex: " << xGridIndex << std::endl;
+//        std::cout << "yGridIndex: " << yGridIndex << std::endl;
+//        std::cout << "x_block_scaled: " << this->world.get_block(xGridIndex).scaled_world_position.x << " " << this->world.get_block(xGridIndex).scaled_world_position.y << std::endl;
+//        std::cout << "x_block_pos: " << this->world.get_block(xGridIndex).world_position.x << " " << this->world.get_block(xGridIndex).world_position.y << std::endl;
+//        std::cout << "x_intersection: " << xIntersection << std::endl;
+//        std::cout << "y_intersection: " << yIntersection << std::endl;
+//        std::cout << "moved x_intersection x: " << xIntersection - this->world.get_block(xGridIndex).scaled_world_position.x << std::endl;
+//        std::cout << "moved y_intersection x: " << yIntersection - this->world.get_block(xGridIndex).scaled_world_position.x << std::endl;
+//        std::cout << "moved x_intersection y: " << xIntersection - this->world.get_block(xGridIndex).scaled_world_position.y << std::endl;
+//        std::cout << "moved y_intersection y: " << yIntersection - this->world.get_block(xGridIndex).scaled_world_position.y << std::endl;
+//        std::cout << "===========\n";
+        const float moved_beginning_coordinate = xIntersection - this->world.get_block(xMapIndex).scaled_world_position.x;
+        if(moved_beginning_coordinate > threshold)
+        {
+//            std::cout << "up" << std::endl;
+//            return {(size_t)xMapIndex, {xIntersection, horizontalGrid}, (float)distToHorizontalGridBeingHit, direction_left};
+            return {(size_t)xMapIndex, {xIntersection, horizontalGrid}, (float)distToHorizontalGridBeingHit, direction_right};
+        }
+        else
+        {
+//            std::cout << "down" << std::endl;
+//            return {(size_t)xMapIndex, {xIntersection, horizontalGrid}, (float)distToHorizontalGridBeingHit, direction_down};
+            return {(size_t)xMapIndex, {xIntersection, horizontalGrid}, (float)distToHorizontalGridBeingHit, direction_left};
+        }
+        //        return {0, {xIntersection, horizontalGrid}, (float)distToHorizontalGridBeingHit, direction_right};
     }
     else
     {
-        return {0, {verticalGrid, yIntersection}, (float)distToVerticalGridBeingHit, direction_right};
+        const float moved_beginning_coordinate = yIntersection - this->world.get_block(yMapIndex).scaled_world_position.x;
+        if(moved_beginning_coordinate > threshold)
+        {
+//            std::cout << "left" << std::endl;
+            return {(size_t)yMapIndex, {verticalGrid, yIntersection}, (float)distToVerticalGridBeingHit, direction_up};
+        }
+        else
+        {
+//            std::cout << "right" << std::endl;
+            return {(size_t)yMapIndex, {verticalGrid, yIntersection}, (float)distToVerticalGridBeingHit, direction_down};
+        }
+//        return {0, {verticalGrid, yIntersection}, (float)distToVerticalGridBeingHit, direction_right};
 
     }
 }
