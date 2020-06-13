@@ -1,6 +1,7 @@
 #include "world.h"
 #include <cmath> // DELETE ME
 #include <stdexcept>
+#include <iostream> // DELETE ME
 
 World::World() {
     this->world_dimensions = {12, 12};
@@ -27,7 +28,9 @@ World::World() {
                           scaled_world_position,
                           glm::ivec3(255, 255, 255),
                           true, false, true, false, false, false, false, false,
-                          0, 0, 0, {0, 0, 0, 0}, 0, 0};
+                          0, 0, 0, {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5}, 0, 0};
+        std::cout << this->world[i].world_position.x << " " << this->world[i].world_position.y << std::endl;
+        std::cout << this->world[i].scaled_world_position.x << " " << this->world[i].scaled_world_position.y << std::endl;
         if (blocks[i] == 0)
             this->world[i].is_solid_wall = false;
         else if (blocks[i] == 1)
@@ -41,6 +44,11 @@ World::World() {
 //            this->world[i].is_portal = true;
 //        }
         this->world[i].color = {rand() % 255, rand() % 255, rand() % 255};
+        if(i == 11 || i == 3)
+        {
+            Block block = world[i];
+            std::cout <<"";
+        }
     }
     this->world[60].wall_textures.up = 1;
     delete[] blocks;

@@ -80,14 +80,7 @@ void Player::add_position(const glm::vec2 &position)
     this->position.y += position.y;
 }
 
-//const glm::vec2 &Player::get_forward() const
-//{
-//    return this->forward;
-//}
-
 int Player::get_distance_to_projection_plane() const
 {
     return distance_to_projection_plane;
 }
-
-#include "player.h"

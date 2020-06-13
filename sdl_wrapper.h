@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include "types.h"
 
 class Sdl_wrapper
 {
@@ -41,6 +42,7 @@ public:
     void put_framebuffer();
     void clear_framebuffer();
     void set_framebuffer_pixel(const uint32_t &color, const int &index);
+    void set_framebuffer_pixel(const Pixel &pixel, const glm::ivec2 &position);
     void set_framebuffer_pixel(const uint32_t &color, const glm::ivec2 &position);
     void set_framebuffer_pixel(const glm::ivec3 &color, const int &index);
     void set_framebuffer_pixel(const glm::ivec3 &color, const glm::ivec2 &position);

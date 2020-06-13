@@ -90,11 +90,21 @@ void Sdl_wrapper::set_framebuffer_pixel(const uint32_t &color, const int &index)
     this->framebuffer_pixels[index] = color;
 }
 
+void Sdl_wrapper::set_framebuffer_pixel(const Pixel &pixel, const glm::ivec2 &position)
+{
+    if(position.y >= this->resolution.y || position.x >= this->resolution.x || position.y < 0 || position.x < 0)
+        throw std::runtime_error("Set pixel index exceeds total number of pixels(Pixel color, ivec2 position).");
+    const int index = position.y * this->resolution.x + position.x;
+    ((uint8_t *)(&this->framebuffer_pixels[index]))[0] = pixel.r;
+    ((uint8_t *)(&this->framebuffer_pixels[index]))[1] = pixel.g;
+    ((uint8_t *)(&this->framebuffer_pixels[index]))[2] = pixel.b;
+}
+
 void Sdl_wrapper::set_framebuffer_pixel(const uint32_t &color, const glm::ivec2 &position)
 {
-    int index = position.y * this->resolution.x + position.x;
-    if(index >= this->pixel_count)
+    if(position.y >= this->resolution.y || position.x >= this->resolution.x || position.y < 0 || position.x < 0)
         throw std::runtime_error("Set pixel index exceeds total number of pixels(uint32_t color, ivec2 position).");
+    const int index = position.y * this->resolution.x + position.x;
     this->framebuffer_pixels[index] = color;
 
 }
@@ -110,9 +120,9 @@ void Sdl_wrapper::set_framebuffer_pixel(const glm::ivec3 &color, const int &inde
 
 void Sdl_wrapper::set_framebuffer_pixel(const glm::ivec3 &color, const glm::ivec2 &position)
 {
-    int index = position.y * this->resolution.x + position.x;
-    if(index >= this->pixel_count)
+    if(position.y >= this->resolution.y || position.x >= this->resolution.x || position.y < 0 || position.x < 0)
         throw std::runtime_error("Set pixel index exceeds total number of pixels(ivec3 color, ivec2 position).");
+    const int index = position.y * this->resolution.x + position.x;
     this->set_framebuffer_pixel(color, index);
 }
 
