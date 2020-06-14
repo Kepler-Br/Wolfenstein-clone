@@ -16,9 +16,24 @@ int Player::get_speed() const
 //                     Lookup_table::sin(this->x_view_angle)};
 //}
 
+int Player::get_running_speed() const
+{
+    return running_speed;
+}
+
+void Player::setRunning_speed(int value)
+{
+    running_speed = value;
+}
+
+void Player::setSpeed(int value)
+{
+    speed = value;
+}
+
 int Player::clamp_angle(const int degree)
 {
-//    if(degree >= 360)
+    //    if(degree >= 360)
 //        return degree % 360;
 //    else if (degree < 0)
 //        return degree % 360 + 360;

@@ -8,17 +8,12 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
         State_base(main_loop, main_loop.get_prev_state()),
         sdl_wrapper(sdl_instance),
         input_manager(input_manager),
-        player({100, 160}, 360),
+        player({1500, 1560}, 360),
         texture_holder(10),
         raycaster(world, lookup),
         renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder)
 {
-    this->texture_holder.load("./image_packer/RW24_2.tex", "WALL");
-    this->texture_holder.load("./image_packer/DOOR2_4.tex", "DOOR");
-    this->texture_holder.load("./image_packer/WALL02_3.tex", "WALL2");
-    this->texture_holder.load("./image_packer/WALL69_9.tex", "WALL3");
-    this->texture_holder.load("./image_packer/WALL03_7.tex", "WALL4");
-    this->lookup.init(this->world.get_block_size(), this->sdl_wrapper.get_resolution().x);
+    this->preload();
 //    SDL_ShowCursor(SDL_DISABLE);
 //    SDL_SetRelativeMouseMode(SDL_TRUE);
 }
@@ -38,41 +33,53 @@ void State_game::on_event()
     {
         const glm::vec2 forward = {this->lookup.cos(this->player.get_x_view_angle()),
                                    this->lookup.sin(this->player.get_x_view_angle())};
-        const glm::vec2 velocity = {forward.x * this->player.get_speed() * deltatime,
-                                    forward.y * this->player.get_speed() * deltatime};
+        int speed;
+        if(this->is_player_running)
+            speed = this->player.get_running_speed();
+        else
+            speed = this->player.get_speed();
+        glm::vec2 velocity = {forward.x * speed * deltatime,
+                              forward.y * speed * deltatime};
         this->player.add_position(velocity);
     }
     if(this->input_manager.isKeyDown(SDLK_s))
     {
         const glm::vec2 forward = {this->lookup.cos(this->player.get_x_view_angle()),
                                    this->lookup.sin(this->player.get_x_view_angle())};
-        const glm::vec2 velocity = {forward.x * this->player.get_speed() * deltatime,
-                                    forward.y * this->player.get_speed() * deltatime};
+        int speed;
+        if(this->is_player_running)
+            speed = this->player.get_running_speed();
+        else
+            speed = this->player.get_speed();
+        glm::vec2 velocity = {forward.x * speed * deltatime,
+                              forward.y * speed * deltatime};
         this->player.add_position(-velocity);
     }
     if(this->input_manager.isKeyDown(SDLK_a))
     {
-//        const glm::vec2 right = glm::vec2(-this->player.get_forward().y, this->player.get_forward().x);
-//        glm::ivec2 velocity = float(this->player.get_speed()) * right * deltatime;
-//        this->player.add_position(velocity);
-//        const glm::vec2 right = glm::vec2(-this->player.get_forward().y, this->player.get_forward().x);
-//        glm::vec2 velocity = -100.0f * right * deltatime;
-//        if(this->is_player_running)
-//            velocity *= 2.0f;
-//        glm::vec3 new_position = this->physics.move(this->player.get_position(), glm::vec3(velocity, 0.0f));
-//        this->player.set_position(new_position);
+        const glm::vec2 left = {this->lookup.sin(this->player.get_x_view_angle()),
+                                 -this->lookup.cos(this->player.get_x_view_angle())};
+        int speed;
+        if(this->is_player_running)
+            speed = this->player.get_running_speed();
+        else
+            speed = this->player.get_speed();
+        glm::vec2 velocity = {left.x * speed * deltatime,
+                              left.y * speed * deltatime};
+        this->player.add_position(velocity);
     }
     if(this->input_manager.isKeyDown(SDLK_d))
     {
-//        const glm::vec2 left = glm::vec2(this->player.get_forward().y, -this->player.get_forward().x);
-//        glm::ivec2 velocity = float(this->player.get_speed()) * left * deltatime;
-//        this->player.add_position(velocity);
-//        const glm::vec2 right = glm::vec2(this->player.get_forward().y, -this->player.get_forward().x);
-//        glm::vec2 velocity = -100.0f * right * deltatime;
-//        if(this->is_player_running)
-//            velocity *= 2.0f;
-//        glm::vec3 new_position = this->physics.move(this->player.get_position(), glm::vec3(velocity, 0.0f));
-//        this->player.set_position(new_position);
+        const glm::vec2 right = {-this->lookup.sin(this->player.get_x_view_angle()),
+                                 this->lookup.cos(this->player.get_x_view_angle())};
+        int speed;
+        if(this->is_player_running)
+            speed = this->player.get_running_speed();
+        else
+            speed = this->player.get_speed();
+        glm::vec2 velocity = {right.x * speed * deltatime,
+                              right.y * speed * deltatime};
+        this->player.add_position(velocity);
     }
     if(this->input_manager.isKeyDown(SDLK_RIGHT))
     {
@@ -88,9 +95,11 @@ void State_game::on_event()
         if (angle<0)
             this->player.add_x_view_angle(this->lookup.angle360);
     }
-//    if(this->input_manager.isKeyDown(SDLK_UP))
+    if(this->input_manager.isKeyDown(SDLK_UP))
+        this->sdl_wrapper.add_y_to_resolution_center(640*deltatime);
 //        this->player.add_y_view_angle(640 * deltatime);
-//    if(this->input_manager.isKeyDown(SDLK_DOWN))
+    if(this->input_manager.isKeyDown(SDLK_DOWN))
+        this->sdl_wrapper.add_y_to_resolution_center(-640*deltatime);
 //        this->player.add_y_view_angle(-640 * deltatime);
     if(this->input_manager.isKeyDown(SDLK_ESCAPE))
         this->main_loop.stop();
@@ -149,5 +158,11 @@ void State_game::on_postdraw()
 
 void State_game::preload()
 {
-
+    this->texture_holder.load("./image_packer/RW24_2.tex", "WALL");
+    this->texture_holder.load("./image_packer/DOOR2_4.tex", "DOOR");
+    this->texture_holder.load("./image_packer/WALL02_3.tex", "WALL2");
+    this->texture_holder.load("./image_packer/WALL69_9.tex", "WALL3");
+    this->texture_holder.load("./image_packer/WALL03_7.tex", "WALL4");
+    this->texture_holder.load("./image_packer/RSKY2.tex", "SKY2");
+    this->lookup.init(this->world.get_block_size(), this->sdl_wrapper.get_resolution().x);
 }

@@ -4,20 +4,21 @@
 #include <iostream> // DELETE ME
 
 World::World() {
-    this->world_dimensions = {12, 12};
+//    this->world_dimensions = {12, 12};
+    this->world_dimensions = {11, 11};
     this->world_length = world_dimensions.x * world_dimensions.y;
-//    int *blocks = new int[this->world_length] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-//                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    int *blocks = new int[this->world_length] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    int *blocks = new int[this->world_length] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+//    int *blocks = new int[this->world_length] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     this->world = new Block[this->world_length];
 
     for (size_t i = 0; i < this->world_length; i++)
@@ -26,11 +27,14 @@ World::World() {
         const glm::vec2 scaled_world_position = glm::vec2(world_position.x*this->block_size, world_position.y*this->block_size);
         this->world[i] = {world_position,
                           scaled_world_position,
-                          glm::ivec3(255, 255, 255),
-                          true, false, true, false, false, false, false, false,
-                          0, 0, 0, {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5}, 0, 0};
-        std::cout << this->world[i].world_position.x << " " << this->world[i].world_position.y << std::endl;
-        std::cout << this->world[i].scaled_world_position.x << " " << this->world[i].scaled_world_position.y << std::endl;
+                          .color=glm::ivec3(255, 255, 255),
+                          .is_solid_wall=true, .is_transparent=false, .is_passable=true, .is_portal=false,
+                          .is_lit_by_lamp=false, .seen_by_player=false, .is_ceiling_sky=true, .is_bottom_sky=false,
+                          .portal_to_block_id=0, .top_sky_texture_id=0, .bottom_sky_texture_id=0,
+                          {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5},
+                          .floor_texture_id=(size_t)rand()%5,
+                          .ceiling_texture_id=(size_t)rand()%5};
+//                          0, 0, 0, {1,1,1,1}, 0, 0};
         if (blocks[i] == 0)
             this->world[i].is_solid_wall = false;
         else if (blocks[i] == 1)
@@ -44,11 +48,6 @@ World::World() {
 //            this->world[i].is_portal = true;
 //        }
         this->world[i].color = {rand() % 255, rand() % 255, rand() % 255};
-        if(i == 11 || i == 3)
-        {
-            Block block = world[i];
-            std::cout <<"";
-        }
     }
     this->world[60].wall_textures.up = 1;
     delete[] blocks;
