@@ -101,7 +101,6 @@ void Sdl_wrapper::set_framebuffer_pixel(const uint32_t &color, const int &index)
 void Sdl_wrapper::set_framebuffer_pixel(const Pixel &pixel, const glm::ivec2 &position)
 {
     if(position.y >= this->resolution.y || position.x >= this->resolution.x || position.y < 0 || position.x < 0)
-//        return;
         throw std::runtime_error("Set pixel index exceeds total number of pixels(Pixel color, ivec2 position).");
     const int index = position.y * this->resolution.x + position.x;
     ((uint8_t *)(&this->framebuffer_pixels[index]))[0] = pixel.r;
