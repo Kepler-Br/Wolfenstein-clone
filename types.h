@@ -41,6 +41,7 @@ struct Block {
     Sided_texture_ids wall_textures;
     size_t floor_texture_id;
     size_t ceiling_texture_id;
+    size_t wall_height;
 };
 
 struct Ray
