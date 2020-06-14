@@ -33,8 +33,8 @@ public:
     SDL_Window *get_window() const;
     SDL_Renderer *get_renderer() const;
     const glm::ivec2 &get_resolution() const;
-
     const glm::ivec2 &get_resolution_center() const;
+    void add_y_to_resolution_center(const int &y);
 
     // Framebuffer operations.
     void lock_framebuffer();
@@ -53,10 +53,7 @@ public:
     void set_pixel(const glm::ivec2 &position);
     void put_filled_rect(const glm::ivec2 &position, const glm::ivec2 &dimensions);
     void put_rect(const glm::ivec2 &position, const glm::ivec2 &dimensions);
-    void put_line(const glm::ivec2 &a, const glm::ivec2 &b)
-    {
-        SDL_RenderDrawLine(this->renderer, a.x, a.y, b.x, b.y);
-    }
+    void put_line(const glm::ivec2 &a, const glm::ivec2 &b);
     void present();
     void clear();
 };

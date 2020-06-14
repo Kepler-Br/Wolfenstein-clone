@@ -13,8 +13,9 @@ class Player
     int x_view_angle = 0;
     int y_view_angle = 0;
     int distance_to_projection_plane = 270;
-    int height = 32;
-    int speed = 64*2;
+    int height = 512;
+    int speed = 128*16;
+    int running_speed = 128*32;
     glm::vec2 position;
 //    glm::vec2 forward;
 //    void calculate_forward();
@@ -36,6 +37,9 @@ public:
     int get_distance_to_projection_plane() const;
     int get_height() const;
     int get_speed() const;
+    int get_running_speed() const;
+    void setRunning_speed(int value);
+    void setSpeed(int value);
 };
 
 #endif //WOLFENSHETIN_PLAYER_H

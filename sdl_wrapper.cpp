@@ -53,6 +53,14 @@ const glm::ivec2 &Sdl_wrapper::get_resolution_center() const
     return this->resolution_center;
 }
 
+void Sdl_wrapper::add_y_to_resolution_center(const int &y)
+{
+    int result = this->resolution_center.y + y;
+    if(result >= this->resolution.y || result < 0)
+        return;
+    this->resolution_center.y += y;
+}
+
 
 void Sdl_wrapper::lock_framebuffer()
 {
@@ -93,6 +101,7 @@ void Sdl_wrapper::set_framebuffer_pixel(const uint32_t &color, const int &index)
 void Sdl_wrapper::set_framebuffer_pixel(const Pixel &pixel, const glm::ivec2 &position)
 {
     if(position.y >= this->resolution.y || position.x >= this->resolution.x || position.y < 0 || position.x < 0)
+//        return;
         throw std::runtime_error("Set pixel index exceeds total number of pixels(Pixel color, ivec2 position).");
     const int index = position.y * this->resolution.x + position.x;
     ((uint8_t *)(&this->framebuffer_pixels[index]))[0] = pixel.r;
@@ -151,6 +160,11 @@ void Sdl_wrapper::put_rect(const glm::ivec2 &position, const glm::ivec2 &dimensi
 {
     SDL_Rect rect = {position.x, position.y, dimensions.x, dimensions.y};
     SDL_RenderDrawRect(this->renderer, &rect);
+}
+
+void Sdl_wrapper::put_line(const glm::ivec2 &a, const glm::ivec2 &b)
+{
+    SDL_RenderDrawLine(this->renderer, a.x, a.y, b.x, b.y);
 }
 
 void Sdl_wrapper::present()

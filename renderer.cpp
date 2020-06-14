@@ -44,6 +44,66 @@ float Renderer::get_block_x_uv(const Ray &ray, const Block &block)
     return ray.position.x / this->world.get_block_size();
 }
 
+void Renderer::draw_floor(const int &column, const int &row, const int &degree)
+{
+    const int &distance_to_PP = this->player.get_distance_to_projection_plane();
+    const int &player_height = this->world.get_block_size();
+    int row_diff = row - this->sdl_wrapper.get_resolution_center().y;
+    if(row_diff == 0)
+        row_diff = 1;
+    int degree_diff = std::abs(std::abs(degree) - std::abs(this->player.get_x_view_angle()));
+    if(degree_diff == 0)
+        degree_diff = 1;
+    int distance_to_floor_point = (player_height * distance_to_PP)/row_diff;
+    distance_to_floor_point /= this->lookup.cos(degree_diff);
+    glm::ivec2 floor_position = glm::vec2(distance_to_floor_point * this->lookup.cos(degree),
+                                          distance_to_floor_point * this->lookup.sin(degree));
+    floor_position += this->player.get_position();
+    const int &block_size = this->world.get_block_size();
+    const glm::ivec2 block_position(floor_position.y/block_size, floor_position.x/block_size);
+    const int block_index = block_position.y*this->world.get_world_dimensions().x+block_position.x;
+    if(floor_position.x/block_size >= this->world.get_world_dimensions().x ||
+       floor_position.y/block_size >= this->world.get_world_dimensions().y ||
+       floor_position.x/block_size < 0 || floor_position.y/block_size < 0)
+        return;
+    const Block &block = this->world.get_block(block_index);
+    const Texture &block_texture = this->texture_holder.get_by_id(block.floor_texture_id);
+    glm::vec2 uv = {(floor_position.x%block_size)/(float)block_size,
+                    (floor_position.y%block_size)/(float)block_size};
+    const Pixel &pixel = block_texture.get_normalized_pixel(uv);
+    this->sdl_wrapper.set_framebuffer_pixel(pixel, glm::ivec2(column, row));
+}
+
+void Renderer::draw_ceiling(const int &column, const int &row, const int &degree)
+{
+    const int &distance_to_PP = this->player.get_distance_to_projection_plane();
+    const int &player_height = this->world.get_block_size();
+    int row_diff = row - this->sdl_wrapper.get_resolution_center().y;
+    if(row_diff == 0)
+        row_diff = 1;
+    int degree_diff = std::abs(std::abs(degree) - std::abs(this->player.get_x_view_angle()));
+    if(degree_diff == 0)
+        degree_diff = 1;
+    int distance_to_ceiling_point = (player_height * distance_to_PP)/row_diff;
+    distance_to_ceiling_point /= this->lookup.cos(degree_diff);
+    glm::ivec2 ceiling_position = glm::vec2(-distance_to_ceiling_point * this->lookup.cos(degree),
+                                          -distance_to_ceiling_point * this->lookup.sin(degree));
+    ceiling_position += this->player.get_position();
+    const int &block_size = this->world.get_block_size();
+    const glm::ivec2 block_position(ceiling_position.y/block_size, ceiling_position.x/block_size);
+    const int block_index = block_position.y*this->world.get_world_dimensions().x+block_position.x;
+    if(ceiling_position.x/block_size >= this->world.get_world_dimensions().x ||
+       ceiling_position.y/block_size >= this->world.get_world_dimensions().y ||
+       ceiling_position.x/block_size < 0 || ceiling_position.y/block_size < 0)
+        return;
+    const Block &block = this->world.get_block(block_index);
+    const Texture &block_texture = this->texture_holder.get_by_id(block.ceiling_texture_id);
+    glm::vec2 uv = {(ceiling_position.x%block_size)/(float)block_size,
+                    (ceiling_position.y%block_size)/(float)block_size};
+    const Pixel &pixel = block_texture.get_normalized_pixel(uv);
+    this->sdl_wrapper.set_framebuffer_pixel(pixel, glm::ivec2(column, row));
+}
+
 Renderer::Renderer(const World &world, Sdl_wrapper &sdl_wrapper, const Player &player, Raycaster &raycaster, Lookup_table &lookup, Texture_holder &texture_holder):
     world(world),
     sdl_wrapper(sdl_wrapper),
@@ -82,7 +142,7 @@ void Renderer::draw_world()
     //   \|/
     //    v
     // we will trace the rays starting from the leftmost ray
-    castArc-=this->lookup.angle30;
+    castArc -= this->lookup.angle30;
     // wrap around if necessary
     if (castArc < 0)
     {
@@ -113,15 +173,15 @@ void Renderer::draw_world()
         // 850 is arbitrary value of the farthest distance.
         dist=floor(dist);
         float uv_start = 0.0f;
-        float uv_step = (std::abs(uv_start)+1.0f)/abs(projectedWallHeight);
+        float uv_step = (1.0f)/abs(projectedWallHeight);
         const Block &block = this->world.get_block(ray.block_id);
         if(oldTop < 0)
         {
             uv_start = float(-oldTop)/projectedWallHeight;
         }
-        glm::vec2 uv = glm::vec2((ray.position.x - block.scaled_world_position.x) / this->world.get_block_size(), uv_start);
+//        glm::vec2 uv = glm::vec2((ray.position.x - block.scaled_world_position.x) / this->world.get_block_size(), uv_start);
+        glm::vec2 uv = glm::vec2(0, uv_start);
         uv.x = this->get_block_x_uv(ray, block);
-
         for(int i = topOfWall; i < bottomOfWall; i++)
         {
             uv.y += uv_step;
@@ -137,10 +197,13 @@ void Renderer::draw_world()
             if(ray.hit_side == direction_right)
                 texture = this->texture_holder.get_by_id(block.wall_textures.right);
             Pixel pixel = texture.get_normalized_pixel(uv);
-//            if(ray.hit_side == direction_down)
-//                pixel = {255, 255, 255, 255};
+
             this->sdl_wrapper.set_framebuffer_pixel(pixel, glm::ivec2(castColumn, i));
         }
+        for(int i = bottomOfWall; i < this->sdl_wrapper.get_resolution().y; i++)
+            this->draw_floor(castColumn, i, castArc);
+        for(int i = topOfWall; i >= 0; i--)
+            this->draw_ceiling(castColumn, i, castArc);
         // TRACE THE NEXT RAY
         castArc+=1;
         if (castArc>=this->lookup.angle360)

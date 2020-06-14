@@ -14,7 +14,7 @@ private:
     Block *world;
     size_t world_length;
     glm::ivec2 world_dimensions;
-    int block_size = 64;
+    int block_size = 512;
 
 public:
     World();
