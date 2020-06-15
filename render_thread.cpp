@@ -155,15 +155,11 @@ Render_thread::Render_thread(World *world, Raycaster *raycaster, const Player *p
 {}
 
 void Render_thread::setup(std::queue<std::pair<glm::ivec2, glm::ivec2>> *tasks, std::mutex *queue_mutex,
-                          std::mutex *new_task_mutex, std::condition_variable *new_task_cv,
-                          std::condition_variable *task_done_cv, std::atomic<uint> *tasks_left)
+                          std::mutex *wait_mutex)
 {
     this->tasks = tasks;
-    this->new_task_cv = new_task_cv;
     this->queue_mutex = queue_mutex;
-    this->new_task_mutex = new_task_mutex;
-    this->task_done_cv = task_done_cv;
-    this->tasks_left = tasks_left;
+    this->wait_mutex = wait_mutex;
 }
 
 Render_thread::Render_thread(const Render_thread &other):
@@ -175,11 +171,8 @@ Render_thread::Render_thread(const Render_thread &other):
     lookup(other.lookup),
     framebuffer(other.framebuffer),
     tasks(other.tasks),
-    new_task_cv(other.new_task_cv),
-    task_done_cv(other.task_done_cv),
     queue_mutex(other.queue_mutex),
-    new_task_mutex(other.new_task_mutex),
-    tasks_left(other.tasks_left),
+    wait_mutex(other.wait_mutex),
     angle_interval(other.angle_interval),
     column_interval(other.column_interval),
     total_workers(other.total_workers)
@@ -189,28 +182,40 @@ Render_thread::Render_thread(const Render_thread &other):
 void Render_thread::run()
 {
     this->is_running.store(true);
-    auto condition = [this]()
-    {
-        return this->tasks->size() != 0 || !this->is_running;
-    };
+//    bool working_on_tasks = false;
     while(this->is_running)
     {
-        std::unique_lock<std::mutex> lock(*this->new_task_mutex);
-        this->new_task_cv->wait(lock, condition);
 //        std::cout << "Tread woked up: " << std::this_thread::get_id() << std::endl;
-        lock.unlock();
+//        std::this_thread::sleep_for(std::chrono::microseconds(3));
+        this->wait_mutex->lock();
         if(!this->is_running)
+        {
+            this->wait_mutex->unlock();
             break;
-        if(this->tasks->size() == 0)
-            continue;
+        }
+//        if(working_on_tasks == false && this->tasks->size() != 0)
+//        {
+//            this->wait_mutex->lock();
+//            working_on_tasks = true;
+//        }
+//        std::cout << "Lock queue" << std::endl;
         this->queue_mutex->lock();
+//        std::cout << "Locked queue" << std::endl;
+        if(this->tasks->size() == 0)
+        {
+//            std::cout << "No tasks\n";
+            this->wait_mutex->unlock();
+//            working_on_tasks = false;
+            this->queue_mutex->unlock();
+            continue;
+        }
+//        std::cout << "Getting task\n";
         std::tie(this->angle_interval, this->column_interval) = this->tasks->front();
-//        std::cout << "Column: " << this->column_interval.x << ", " << this->column_interval.y << std::endl;
         this->tasks->pop();
         this->queue_mutex->unlock();
         this->render();
-        this->task_done_cv->notify_one();
-        (*this->tasks_left)--;
+        this->wait_mutex->unlock();
+//        std::this_thread::sleep_for(std::chrono::microseconds(3));
     }
 }
 

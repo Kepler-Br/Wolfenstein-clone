@@ -24,11 +24,8 @@ private:
     Framebuffer *framebuffer;
 
     std::queue<std::pair<glm::ivec2, glm::ivec2>> *tasks;
-    std::condition_variable *new_task_cv;
-    std::condition_variable *task_done_cv;
     std::mutex *queue_mutex;
-    std::mutex *new_task_mutex;
-    std::atomic<uint> *tasks_left;
+    std::mutex *wait_mutex;
 
     glm::ivec2 angle_interval;
     glm::ivec2 column_interval;
@@ -48,8 +45,7 @@ public:
                   Lookup_table *lookup, Framebuffer *framebuffer);
     Render_thread(const Render_thread &other);
     void setup(std::queue<std::pair<glm::ivec2, glm::ivec2>> *tasks, std::mutex *queue_mutex,
-               std::mutex *new_task_mutex, std::condition_variable *new_task_cv,
-               std::condition_variable *task_done_cv, std::atomic<uint> *tasks_left);
+               std::mutex *wait_mutex);
     void run();
     void stop();
 };

@@ -13,7 +13,7 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
         texture_holder(10),
         raycaster(world, lookup),
         framebuffer(sdl_wrapper),
-        renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder, framebuffer, 1)
+        renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder, framebuffer, 2)
 {
     const glm::ivec2 framebuffer_resolution = this->sdl_wrapper.get_resolution() / this->framebuffer_divider;
     this->framebuffer.init(framebuffer_resolution);
@@ -122,7 +122,6 @@ void State_game::on_event()
 void State_game::on_update()
 {
     std::cout << "FPS: " << 1.0f/this->main_loop.get_deltatime() << std::endl;
-
 }
 
 void State_game::on_predraw()

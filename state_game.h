@@ -33,7 +33,7 @@ private:
     Framebuffer framebuffer;
     World_renderer renderer;
     Lookup_table lookup;
-    const int framebuffer_divider = 3;
+    const int framebuffer_divider = 2;
 
 public:
     State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance);
