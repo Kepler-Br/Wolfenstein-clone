@@ -12,7 +12,7 @@ void Sdl_wrapper::init_sdl()
         throw std::runtime_error("Cannot create SDL2 window: " + std::string(SDL_GetError()));
 
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     if(renderer == nullptr)
         throw std::runtime_error("Cannot create SDL2 renderer: " + std::string(SDL_GetError()));
     this->pixel_count = this->resolution.x * this->resolution.y;

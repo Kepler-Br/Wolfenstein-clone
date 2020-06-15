@@ -14,7 +14,7 @@
 #include "input_manager.h"
 #include <SDL2/SDL_image.h>
 #include "texture_holder.h"
-#include "renderer.h"
+#include "world_renderer.h"
 #include "raycaster.h"
 
 class State_game: State_base
@@ -29,7 +29,7 @@ private:
     Texture_holder texture_holder;
     World world;
     Raycaster raycaster;
-    Renderer renderer;
+    World_renderer renderer;
     Lookup_table lookup;
 
 public:

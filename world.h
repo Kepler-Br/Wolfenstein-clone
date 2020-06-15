@@ -27,6 +27,7 @@ public:
     const int &get_block_size() const;
     void set_block_size(const int &block_size);
     void set_block_seen(const bool seen, const size_t index);
+    void bake_light();
 };
 
 
