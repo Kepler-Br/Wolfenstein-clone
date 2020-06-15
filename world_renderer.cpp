@@ -34,8 +34,8 @@ World_renderer::World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Pla
     this->render_cores = render_cores;
     for(uint i = 0; i < render_cores; i++)
     {
-        Render_thread worker(this->world, this->raycaster, this->player, this->sdl_wrapper,
-                             this->texture_holder, this->lookup, this->framebuffer);
+        Render_thread worker(&this->world, &this->raycaster, &this->player, &this->sdl_wrapper,
+                             &this->texture_holder, &this->lookup, &this->framebuffer);
         worker.setup(&this->tasks, &this->queue_mutex, &this->new_task_mutex,
                      &this->new_task_cv, &this->task_done_cv, &this->tasks_left);
         this->workers.push_back(worker);
@@ -56,10 +56,12 @@ World_renderer::~World_renderer()
 
 void World_renderer::render()
 {
-//    std::lock_guard<std::mutex>(this->new_task_mutex);
+//    std::unique_lock<std::mutex>(this->new_task_mutex);
+//    std::cout << "Generating tasks\n";
     this->generate_tasks();
     this->new_task_cv.notify_all();
     auto condition = [this](){return this->tasks_left.load() == 0;};
     std::unique_lock<std::mutex> task_done_lock(this->task_done_mutex);
     this->task_done_cv.wait(task_done_lock, condition);
+//    std::cout << "Done rendering\n";
 }

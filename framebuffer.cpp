@@ -94,7 +94,11 @@ void Framebuffer::set_pixel(const Pixel &color, const glm::ivec2 &position)
 {
     if(position.x >= this->resolution.x || position.y >= this->resolution.y ||
             position.x < 0 || position.y < 0)
+#ifdef DEBUG
         throw std::runtime_error("Set pixel position exceeds framebuffer resolution(Pixel color, ivec2 position).");
+#else
+        return;
+#endif
     const int index = this->get_index_from_position(position);
     ((uint8_t *)(&this->pixels[index]))[0] = color.r;
     ((uint8_t *)(&this->pixels[index]))[1] = color.g;
@@ -105,7 +109,12 @@ void Framebuffer::set_pixel(const glm::vec3 &color, const glm::ivec2 &position)
 {
     if(position.x >= this->resolution.x || position.y >= this->resolution.y ||
             position.x < 0 || position.y < 0)
+#ifdef DEBUG
         throw std::runtime_error("Set pixel position exceeds framebuffer resolution(Pixel color, ivec2 position).");
+#else
+        return;
+#endif
+
     const int index = this->get_index_from_position(position);
     ((uint8_t *)(&this->pixels[index]))[0] = static_cast<uint8_t>(255.0f*color.r);
     ((uint8_t *)(&this->pixels[index]))[1] = static_cast<uint8_t>(255.0f*color.g);

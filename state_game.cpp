@@ -87,22 +87,22 @@ void State_game::on_event()
     }
     if(this->input_manager.isKeyDown(SDLK_RIGHT))
     {
-        this->player.add_x_view_angle(52);
+        this->player.add_x_view_angle(this->lookup.angle5);
         const int angle = this->player.get_x_view_angle();
         if (angle>this->lookup.angle360)
             this->player.add_x_view_angle(-this->lookup.angle360);
     }
     if(this->input_manager.isKeyDown(SDLK_LEFT))
     {
-        this->player.add_x_view_angle(-52);
+        this->player.add_x_view_angle(-this->lookup.angle5);
         const int angle = this->player.get_x_view_angle();
         if (angle<0)
             this->player.add_x_view_angle(this->lookup.angle360);
     }
-//    if(this->input_manager.isKeyDown(SDLK_UP))
-//        this->sdl_wrapper.add_y_to_resolution_center(640*deltatime);
-//    if(this->input_manager.isKeyDown(SDLK_DOWN))
-//        this->sdl_wrapper.add_y_to_resolution_center(-640*deltatime);
+    if(this->input_manager.isKeyDown(SDLK_UP))
+        this->framebuffer.offset_center(glm::ivec2(0, 640*deltatime));
+    if(this->input_manager.isKeyDown(SDLK_DOWN))
+        this->framebuffer.offset_center(glm::ivec2(0, -640*deltatime));
     if(this->input_manager.isKeyDown(SDLK_ESCAPE))
         this->main_loop.stop();
     if(this->input_manager.isEventPending(SDL_QUIT))
@@ -177,4 +177,5 @@ void State_game::preload()
     this->texture_holder.load("./image_packer/WALL69_9.tex", "WALL3");
     this->texture_holder.load("./image_packer/WALL03_7.tex", "WALL4");
     this->texture_holder.load("./image_packer/RSKY2.tex", "SKY2");
+    this->texture_holder.load("./image_packer/CEIL3_5.tex", "CEIL3_5");
 }
