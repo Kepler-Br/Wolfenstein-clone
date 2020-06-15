@@ -22,7 +22,7 @@ void Render_thread::draw_floor(const int &column, const int &row, const int &cas
 {
     const int &distance_to_PP = this->player.get_distance_to_projection_plane();
     const int &player_height = this->world.get_block_size();
-    int row_diff = row - this->sdl_wrapper.get_resolution_center().y;
+    int row_diff = row - this->framebuffer.get_center().y;
     if(row_diff == 0)
         row_diff = 1;
     int degree_diff = std::abs(std::abs(cast_degree) - std::abs(this->player.get_x_view_angle()));
@@ -45,14 +45,14 @@ void Render_thread::draw_floor(const int &column, const int &row, const int &cas
     glm::vec2 uv = {(floor_position.x%block_size)/(float)block_size,
                     (floor_position.y%block_size)/(float)block_size};
     const Pixel &pixel = block_texture.get_normalized_pixel(uv);
-    this->sdl_wrapper.set_framebuffer_pixel(pixel, glm::ivec2(column, row));
+    this->framebuffer.set_pixel(pixel, glm::ivec2(column, row));
 }
 
 void Render_thread::draw_ceiling(const int &column, const int &row, const int &cast_degree)
 {
     const int &distance_to_PP = this->player.get_distance_to_projection_plane();
     const int &player_height = this->world.get_block_size();
-    int row_diff = row - this->sdl_wrapper.get_resolution_center().y;
+    int row_diff = row - this->framebuffer.get_center().y;
     if(row_diff == 0)
         row_diff = 1;
     int degree_diff = std::abs(std::abs(cast_degree) - std::abs(this->player.get_x_view_angle()));
@@ -75,7 +75,7 @@ void Render_thread::draw_ceiling(const int &column, const int &row, const int &c
     glm::vec2 uv = {(ceiling_position.x%block_size)/(float)block_size,
                     (ceiling_position.y%block_size)/(float)block_size};
     const Pixel &pixel = block_texture.get_normalized_pixel(uv);
-    this->sdl_wrapper.set_framebuffer_pixel(pixel, glm::ivec2(column, row));
+    this->framebuffer.set_pixel(pixel, glm::ivec2(column, row));
 }
 
 void Render_thread::render_column(int cast_degree, const int &cast_column)
@@ -94,13 +94,13 @@ void Render_thread::render_column(int cast_degree, const int &cast_column)
     dist = ray.length;
     dist /= this->lookup.fish(cast_column);
     int projectedWallHeight=(this->wall_height*this->player.get_distance_to_projection_plane()/dist);
-    bottomOfWall = this->sdl_wrapper.get_resolution_center().y+(projectedWallHeight*0.5);
-    topOfWall = this->sdl_wrapper.get_resolution_center().y-(projectedWallHeight*0.5);
+    bottomOfWall = this->framebuffer.get_center().y+(projectedWallHeight*0.5);
+    topOfWall = this->framebuffer.get_center().y-(projectedWallHeight*0.5);
     int oldTop = topOfWall;
     if (topOfWall<0)
         topOfWall=0;
-    if (bottomOfWall>=this->sdl_wrapper.get_resolution().y)
-        bottomOfWall=this->sdl_wrapper.get_resolution().y-1;
+    if (bottomOfWall>=this->framebuffer.get_resolution().y)
+        bottomOfWall=this->framebuffer.get_resolution().y-1;
     // Add simple shading so that farther wall slices appear darker.
     // 850 is arbitrary value of the farthest distance.
     dist=floor(dist);
@@ -129,10 +129,9 @@ void Render_thread::render_column(int cast_degree, const int &cast_column)
         if(ray.hit_side == direction_right)
             texture = this->texture_holder.get_by_id(block.wall_textures.right);
         Pixel pixel = texture.get_normalized_pixel(uv);
-
-        this->sdl_wrapper.set_framebuffer_pixel(pixel, glm::ivec2(cast_column, i));
+        this->framebuffer.set_pixel(pixel, glm::ivec2(cast_column, i));
     }
-    for(int i = bottomOfWall; i < this->sdl_wrapper.get_resolution().y; i++)
+    for(int i = bottomOfWall; i < this->framebuffer.get_resolution().y; i++)
         this->draw_floor(cast_column, i, cast_degree);
     for(int i = topOfWall; i >= 0; i--)
         this->draw_ceiling(cast_column, i, cast_degree);
@@ -145,13 +144,14 @@ void Render_thread::render()
         this->render_column(cast_degree, cast_column);
 }
 
-Render_thread::Render_thread(World &world, Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper, Texture_holder &texture_holder, Lookup_table &lookup_table):
+Render_thread::Render_thread(World &world, Raycaster &raycaster, const Player &player, Sdl_wrapper &sdl_wrapper, Texture_holder &texture_holder, Lookup_table &lookup_table, Framebuffer &framebuffer):
     world(world),
     raycaster(raycaster),
     player(player),
     sdl_wrapper(sdl_wrapper),
     texture_holder(texture_holder),
-    lookup(lookup_table)
+    lookup(lookup_table),
+    framebuffer(framebuffer)
 {}
 
 void Render_thread::setup(std::queue<std::pair<glm::ivec2, glm::ivec2>> *tasks, std::mutex *queue_mutex,
@@ -173,6 +173,7 @@ Render_thread::Render_thread(const Render_thread &other):
     sdl_wrapper(other.sdl_wrapper),
     texture_holder(other.texture_holder),
     lookup(other.lookup),
+    framebuffer(other.framebuffer),
     tasks(other.tasks),
     new_task_cv(other.new_task_cv),
     task_done_cv(other.task_done_cv),
@@ -183,9 +184,7 @@ Render_thread::Render_thread(const Render_thread &other):
     column_interval(other.column_interval),
     total_workers(other.total_workers)
 
-{
-
-}
+{}
 
 void Render_thread::run()
 {

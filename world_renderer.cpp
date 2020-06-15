@@ -3,16 +3,16 @@
 
 void World_renderer::generate_tasks()
 {
-    this->queue_mutex.lock();
-    int step = this->sdl_wrapper.get_resolution().x/this->render_cores;
-    const int x_resolution = this->sdl_wrapper.get_resolution().x;
+
+    const int x_resolution = this->framebuffer.get_resolution().x;
+    int step = x_resolution/this->render_cores;
     int angle = this->player.get_x_view_angle() - this->lookup.angle30;
     if (angle < 0)
         angle=this->lookup.angle360 + angle;
+    this->queue_mutex.lock();
     for(int x = step, prev_x = 0; x <= x_resolution; prev_x = x, x += step)
     {
         this->tasks.push(std::make_pair(glm::ivec2(angle, angle+step), glm::ivec2(prev_x, x)));
-//        std::cout << prev_x << ", " << x << std::endl;
         angle+=step;
     }
     tasks_left.store(this->tasks.size());
@@ -21,20 +21,21 @@ void World_renderer::generate_tasks()
 
 World_renderer::World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
                    Raycaster &raycaster, Lookup_table &lookup,
-                   Texture_holder &texture_holder, const uint &render_cores = 4):
+                   Texture_holder &texture_holder, Framebuffer &framebuffer, const uint &render_cores = 4):
     world(world),
     sdl_wrapper(sdl_wrapper),
     player(player),
     raycaster(raycaster),
     lookup(lookup),
-    texture_holder(texture_holder)
+    texture_holder(texture_holder),
+    framebuffer(framebuffer)
 {
     this->workers.reserve(render_cores);
     this->render_cores = render_cores;
     for(uint i = 0; i < render_cores; i++)
     {
         Render_thread worker(this->world, this->raycaster, this->player, this->sdl_wrapper,
-                             this->texture_holder, this->lookup);
+                             this->texture_holder, this->lookup, this->framebuffer);
         worker.setup(&this->tasks, &this->queue_mutex, &this->new_task_mutex,
                      &this->new_task_cv, &this->task_done_cv, &this->tasks_left);
         this->workers.push_back(worker);
@@ -61,11 +62,4 @@ void World_renderer::render()
     auto condition = [this](){return this->tasks_left.load() == 0;};
     std::unique_lock<std::mutex> task_done_lock(this->task_done_mutex);
     this->task_done_cv.wait(task_done_lock, condition);
-//    number_of_tasks_done.store(0);
-//    this->new_task_cv.notify_all();
-//    {
-//        std::unique_lock<std::mutex> locked_mutex(this->task_done_mutex);
-//        std::cout << "Waiting for cv\n";
-//        this->task_done_cv.wait(locked_mutex, [this](){return this->number_of_tasks_done == this->render_cores;});
-//    }
 }
