@@ -16,6 +16,7 @@
 #include "texture_holder.h"
 #include "world_renderer.h"
 #include "raycaster.h"
+#include "framebuffer.h"
 
 class State_game: State_base
 {
@@ -29,8 +30,10 @@ private:
     Texture_holder texture_holder;
     World world;
     Raycaster raycaster;
+    Framebuffer framebuffer;
     World_renderer renderer;
     Lookup_table lookup;
+    const int framebuffer_divider = 2;
 
 public:
     State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance);

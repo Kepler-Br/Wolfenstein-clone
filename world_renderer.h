@@ -7,6 +7,7 @@
 #include "raycaster.h"
 #include "texture_holder.h"
 #include "render_thread.h"
+#include "framebuffer.h"
 
 #include <condition_variable>
 #include <atomic>
@@ -21,6 +22,7 @@ class World_renderer
     Raycaster &raycaster;
     Lookup_table &lookup;
     Texture_holder &texture_holder;
+    Framebuffer &framebuffer;
 
     std::queue<std::pair<glm::ivec2, glm::ivec2>> tasks;
     std::condition_variable new_task_cv;
@@ -36,8 +38,8 @@ class World_renderer
     void generate_tasks();
 public:
     World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
-             Raycaster &raycaster, Lookup_table &lookup, Texture_holder &texture_holder,
-             const uint &render_cores);
+                   Raycaster &raycaster, Lookup_table &lookup, Texture_holder &texture_holder,
+                   Framebuffer &framebuffer, const uint &render_cores);
     ~World_renderer();
 
     void render();

@@ -5,6 +5,7 @@
 #include "raycaster.h"
 #include "world.h"
 #include "sdl_wrapper.h"
+#include "framebuffer.h"
 #include "texture_holder.h"
 #include <condition_variable>
 #include <mutex>
@@ -20,6 +21,7 @@ private:
     Sdl_wrapper &sdl_wrapper;
     const Texture_holder &texture_holder;
     Lookup_table &lookup;
+    Framebuffer &framebuffer;
 
     std::queue<std::pair<glm::ivec2, glm::ivec2>> *tasks;
     std::condition_variable *new_task_cv;
@@ -43,7 +45,7 @@ private:
 public:
     Render_thread(World &world, Raycaster &raycaster, const Player &player,
                   Sdl_wrapper &sdl_wrapper, Texture_holder &texture_holder,
-                  Lookup_table &lookup);
+                  Lookup_table &lookup, Framebuffer &framebuffer);
     Render_thread(const Render_thread &other);
     void setup(std::queue<std::pair<glm::ivec2, glm::ivec2>> *tasks, std::mutex *queue_mutex,
                std::mutex *new_task_mutex, std::condition_variable *new_task_cv, std::condition_variable *task_done_cv, std::atomic<uint> *tasks_left);
