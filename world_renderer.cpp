@@ -15,8 +15,19 @@ void World_renderer::generate_tasks()
         this->tasks.push(std::make_pair(glm::ivec2(angle, angle+step), glm::ivec2(prev_x, x)));
         angle+=step;
     }
-    tasks_left.store(this->tasks.size());
     this->queue_mutex.unlock();
+}
+
+void World_renderer::lock_mutexes()
+{
+    for(auto &mutex : this->wait_task_mutexes)
+        mutex->lock();
+}
+
+void World_renderer::unlock_mutexes()
+{
+    for(auto &mutex : this->wait_task_mutexes)
+        mutex->unlock();
 }
 
 World_renderer::World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
@@ -34,12 +45,12 @@ World_renderer::World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Pla
     this->render_cores = render_cores;
     for(uint i = 0; i < render_cores; i++)
     {
+        this->wait_task_mutexes.push_back(new std::mutex());
         Render_thread worker(&this->world, &this->raycaster, &this->player, &this->sdl_wrapper,
                              &this->texture_holder, &this->lookup, &this->framebuffer);
-        worker.setup(&this->tasks, &this->queue_mutex, &this->new_task_mutex,
-                     &this->new_task_cv, &this->task_done_cv, &this->tasks_left);
+        worker.setup(&this->tasks, &this->queue_mutex, this->wait_task_mutexes[i]);
         this->workers.push_back(worker);
-        this->threads.push_back(std::thread(&Render_thread::run, &this->workers.front()));
+        this->threads.push_back(std::thread(&Render_thread::run, &this->workers[i]));
     }
 }
 
@@ -48,20 +59,20 @@ World_renderer::~World_renderer()
     SDL_LogDebug(SDL_LOG_CATEGORY_RENDER, "~World_renderer: stopping threads.");
     for(auto &worker : this->workers)
         worker.stop();
-    this->new_task_cv.notify_all();
+    this->unlock_mutexes();
     for(auto &thread : this->threads)
         thread.join();
+    for(auto *mutex : this->wait_task_mutexes)
+        delete mutex;
     SDL_LogDebug(SDL_LOG_CATEGORY_RENDER, "~World_renderer: threads stopped succesfully.");
 }
 
 void World_renderer::render()
 {
-//    std::unique_lock<std::mutex>(this->new_task_mutex);
-//    std::cout << "Generating tasks\n";
     this->generate_tasks();
-    this->new_task_cv.notify_all();
-    auto condition = [this](){return this->tasks_left.load() == 0;};
-    std::unique_lock<std::mutex> task_done_lock(this->task_done_mutex);
-    this->task_done_cv.wait(task_done_lock, condition);
+//    std::cout << this->tasks.size() << std::endl;
+    this->unlock_mutexes();
+    std::this_thread::sleep_for(std::chrono::microseconds(1));
+    this->lock_mutexes();
 //    std::cout << "Done rendering\n";
 }

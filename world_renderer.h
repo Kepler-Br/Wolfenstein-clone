@@ -25,17 +25,15 @@ class World_renderer
     Framebuffer &framebuffer;
 
     std::queue<std::pair<glm::ivec2, glm::ivec2>> tasks;
-    std::condition_variable new_task_cv;
-    std::condition_variable task_done_cv;
     std::mutex queue_mutex;
-    std::mutex task_done_mutex;
-    std::mutex new_task_mutex;
     std::vector<Render_thread> workers;
     std::vector<std::thread> threads;
-    std::atomic<uint> tasks_left;
+    std::vector<std::mutex *> wait_task_mutexes;
     uint render_cores;
 
     void generate_tasks();
+    void lock_mutexes();
+    void unlock_mutexes();
 public:
     World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
                    Raycaster &raycaster, Lookup_table &lookup, Texture_holder &texture_holder,
