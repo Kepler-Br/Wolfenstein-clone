@@ -92,7 +92,7 @@ float Main_loop::calc_deltatime()
 void Main_loop::limit_fps()
 {
     static uint start = SDL_GetTicks();
-    if (((1000 / max_fps) > (SDL_GetTicks() - start)))
+    if ((uint32_t(1000 / max_fps) > uint32_t(SDL_GetTicks() - start)))
         SDL_Delay(1000 / max_fps - (SDL_GetTicks() - start));
     start = SDL_GetTicks();
 }

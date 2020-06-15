@@ -9,7 +9,7 @@
 class Main_loop {
 private:
     float deltatime;
-    int max_fps = 30;
+    int max_fps = 60;
     bool is_running = false;
     std::stack<State_base *> state_stack;
     State_base *state_to_delete = nullptr;

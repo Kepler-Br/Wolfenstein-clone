@@ -4,6 +4,7 @@
 
 #include "state_game.h"
 
+#include <iostream> //DELETEME
 State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance) :
         State_base(main_loop, main_loop.get_prev_state()),
         sdl_wrapper(sdl_instance),
@@ -11,9 +12,8 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
         player({1500, 1560}, 360),
         texture_holder(10),
         raycaster(world, lookup),
-        renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder)
+        renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder, 4)
 {
-    this->preload();
 //    SDL_ShowCursor(SDL_DISABLE);
 //    SDL_SetRelativeMouseMode(SDL_TRUE);
 }
@@ -119,7 +119,7 @@ void State_game::on_event()
 
 void State_game::on_update()
 {
-//    std::cout << 1.0f/this->main_loop.get_deltatime() << std::endl;
+    std::cout << 1.0f/this->main_loop.get_deltatime() << std::endl;
 
 }
 
@@ -140,7 +140,8 @@ void State_game::on_draw()
 
     this->sdl_wrapper.lock_framebuffer();
     this->sdl_wrapper.clear_framebuffer();
-    this->renderer.draw_world();
+//    this->renderer.draw_world();
+    this->renderer.render();
     this->sdl_wrapper.unlock_framebuffer();
     this->sdl_wrapper.put_framebuffer();
 //    this->renderer.draw_map();

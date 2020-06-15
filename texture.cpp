@@ -94,6 +94,6 @@ void Texture::read(const std::string &path)
     delete []this->pixels;
     this->pixels = new Pixel[pixel_count];
     file.read((char*)this->pixels, sizeof(Pixel)*this->pixel_count);
-    if(file.gcount() != sizeof(Pixel)*this->pixel_count)
+    if(file.gcount() != (std::streamsize)(sizeof(Pixel)*this->pixel_count))
         throw std::runtime_error("Abrupt end of the texture: " + path);
 }

@@ -62,7 +62,6 @@ const Block &World::get_block(const glm::ivec2 &position) const
 {
     if (position.x >= this->world_dimensions.x || position.y >= this->world_dimensions.y || position.x < 0 || position.y < 0)
         throw std::out_of_range("Tried to access index outside of the map.");
-//        return this->world[0];
     const int index = position.y * this->world_dimensions.x + position.x;
     return this->world[index];
 }
@@ -70,7 +69,6 @@ const Block &World::get_block(const glm::ivec2 &position) const
 Block &World::get_block(const glm::ivec2 &position)
 {
     if (position.x >= this->world_dimensions.x || position.y >= this->world_dimensions.y || position.x < 0 || position.y < 0)
-//        return this->world[0];
         throw std::out_of_range("Tried to access index outside of the map.");
     const int index = position.y * this->world_dimensions.x + position.x;
     return this->world[index];
@@ -78,7 +76,7 @@ Block &World::get_block(const glm::ivec2 &position)
 
 const Block &World::get_block(const size_t &index) const
 {
-    if (index >= this->world_length || index < 0)
+    if (index >= this->world_length)
         throw std::out_of_range("Tried to access index outside of the map.");
 //        return this->world[0];
     return this->world[index];
@@ -86,7 +84,7 @@ const Block &World::get_block(const size_t &index) const
 
 Block &World::get_block(const size_t &index)
 {
-    if (index >= this->world_length || index < 0)
+    if (index >= this->world_length)
         throw std::out_of_range("Tried to access index outside of the map.");
     return this->world[index];
 }
