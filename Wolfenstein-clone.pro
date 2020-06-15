@@ -10,3 +10,5 @@ HEADERS += \
         *.h
 
 LIBS += -lSDL2 -lpthread
+
+DEFINES_DEBUG += DEBUG

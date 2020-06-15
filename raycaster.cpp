@@ -178,7 +178,7 @@ Ray Raycaster::cast(glm::vec2 position, int degree)
     if(dist_to_horizontal_grid_being_hit < dist_to_vertical_grid_being_hit)
     {
         const Block &block = this->world.get_block(x_map_index);
-        const float moved_beginning_coordinate = x_intersection - block.scaled_world_position.y;
+        const float moved_beginning_coordinate = horizontal_grid - block.scaled_world_position.y;
         if(moved_beginning_coordinate > threshold)
             return {(size_t)x_map_index, {x_intersection, horizontal_grid}, (float)dist_to_horizontal_grid_being_hit, direction_right};
         else
@@ -187,7 +187,7 @@ Ray Raycaster::cast(glm::vec2 position, int degree)
     else
     {
         const Block &block = this->world.get_block(y_map_index);
-        const float moved_beginning_coordinate = y_intersection - block.scaled_world_position.x;
+        const float moved_beginning_coordinate = vertical_grid - block.scaled_world_position.x;
         if(moved_beginning_coordinate > threshold)
             return {(size_t)y_map_index, {vertical_grid, y_intersection}, (float)dist_to_vertical_grid_being_hit, direction_up};
         else

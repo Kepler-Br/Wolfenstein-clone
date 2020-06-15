@@ -32,8 +32,8 @@ World::World() {
                           .is_lit_by_lamp=false, .seen_by_player=false, .is_ceiling_sky=true, .is_bottom_sky=false,
                           .portal_to_block_id=0, .top_sky_texture_id=0, .bottom_sky_texture_id=0,
                           {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5},
-                          .floor_texture_id=(size_t)rand()%5,
-                          .ceiling_texture_id=(size_t)rand()%5,
+                          .floor_texture_id=4,
+                          .ceiling_texture_id=6,
                           .wall_height=(size_t)(this->block_size)};
         if (blocks[i] == 0)
             this->world[i].is_solid_wall = false;
