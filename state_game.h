@@ -9,14 +9,14 @@
 #include "main_loop.h"
 #include "state_base.h"
 #include "sdl_wrapper.h"
-#include "raycaster.h"
 #include "world.h"
 #include "player.h"
-#include "world_renderer.h"
-#include "physics.h"
 #include "input_manager.h"
 #include <SDL2/SDL_image.h>
 #include "texture_holder.h"
+#include "world_renderer.h"
+#include "raycaster.h"
+#include "framebuffer.h"
 
 class State_game: State_base
 {
@@ -26,12 +26,14 @@ private:
     bool is_paused = false;
     Sdl_wrapper &sdl_wrapper;
     Input_manager &input_manager;
-    Raycaster raycaster;
-    World world;
-    World_renderer renderer;
-    Physics physics;
     Player player;
     Texture_holder texture_holder;
+    World world;
+    Raycaster raycaster;
+    Framebuffer framebuffer;
+    World_renderer renderer;
+    Lookup_table lookup;
+    const int framebuffer_divider = 2;
 
 public:
     State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance);
@@ -41,6 +43,7 @@ public:
     void on_predraw() override;
     void on_draw() override;
     void on_postdraw() override;
+    void preload() override;
 };
 
 

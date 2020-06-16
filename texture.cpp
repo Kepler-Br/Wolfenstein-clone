@@ -21,7 +21,7 @@ void Texture::free()
     delete []this->pixels;
 }
 
-const uint &Texture::get_pixel_count() const
+const size_t &Texture::get_pixel_count() const
 {
     return this->pixel_count;
 }
@@ -31,7 +31,7 @@ const glm::ivec2 &Texture::get_resolution() const
     return this->resolution;
 }
 
-const bool Texture::is_transparent() const
+bool Texture::is_transparent() const
 {
     return transparent;
 }
@@ -57,7 +57,6 @@ const Pixel &Texture::get_pixel(const glm::ivec2 &position) const
     }
     else
         index = position.y * this->resolution.x + position.x;
-    Pixel &pixel = this->pixels[index];
     return this->pixels[index];
 }
 
@@ -95,6 +94,6 @@ void Texture::read(const std::string &path)
     delete []this->pixels;
     this->pixels = new Pixel[pixel_count];
     file.read((char*)this->pixels, sizeof(Pixel)*this->pixel_count);
-    if(file.gcount() != sizeof(Pixel)*this->pixel_count)
+    if(file.gcount() != (std::streamsize)(sizeof(Pixel)*this->pixel_count))
         throw std::runtime_error("Abrupt end of the texture: " + path);
 }

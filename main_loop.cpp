@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "main_loop.h"
 #include <cmath>
+#include <stdexcept>
 
 void Main_loop::pop_all_states()
 {
@@ -19,7 +20,6 @@ void Main_loop::pop_all_states()
 Main_loop::Main_loop(const glm::ivec2 &resolution)
 {
     this->sdl_instance = Sdl_wrapper(resolution);
-    this->resolution = resolution;
 }
 
 Main_loop::~Main_loop()
@@ -92,7 +92,7 @@ float Main_loop::calc_deltatime()
 void Main_loop::limit_fps()
 {
     static uint start = SDL_GetTicks();
-    if (((1000 / max_fps) > (SDL_GetTicks() - start)))
+    if ((uint32_t(1000 / max_fps) > uint32_t(SDL_GetTicks() - start)))
         SDL_Delay(1000 / max_fps - (SDL_GetTicks() - start));
     start = SDL_GetTicks();
 }
