@@ -12,6 +12,43 @@
 #include <atomic>
 #include <queue>
 
+enum Render_thread_task_type
+{
+    stop_thread_task, general_thread_task
+};
+
+class Producer_queue
+{
+private:
+    std::mutex access_mutex;
+    std::mutex lock_mutex;
+    std::queue<std::pair<Render_thread_task_type, std::pair<glm::ivec2, glm::ivec2>>> task_queue;
+public:
+//    bool has_new_tasks() const
+//    {
+//        return task_queue.size() != 0;
+//    }
+
+    std::pair<Render_thread_task_type, std::pair<glm::ivec2, glm::ivec2>> get_task()
+    {
+        this->lock_mutex.lock();
+        this->lock_mutex.unlock();
+        this->access_mutex.lock();
+        auto task = this->task_queue.front();
+        this->access_mutex.unlock();
+        return task;
+    }
+    void lock()
+    {
+        this->lock_mutex.lock();
+    }
+
+    void unlock()
+    {
+        this->lock_mutex.unlock();
+    }
+};
+
 class Render_thread
 {
 private:
