@@ -25,6 +25,7 @@ World::World() {
     {
         const glm::vec2 world_position = {i % this->world_dimensions.x, i / this->world_dimensions.y};
         const glm::vec2 scaled_world_position = glm::vec2(world_position.x*this->block_size, world_position.y*this->block_size);
+//        const total_textures = 4;
         this->world[i] = {world_position,
                           scaled_world_position,
                           .color=glm::ivec3(255, 255, 255),
@@ -33,8 +34,8 @@ World::World() {
                           .portal_to_block_id=0, .top_sky_texture_id=0, .bottom_sky_texture_id=0,
                           {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5},
                           .floor_texture_id=4,
-                          .ceiling_texture_id=6,
-                          .wall_height=(size_t)(this->block_size)};
+                          .ceiling_texture_id=5,
+                          .floor_height=(size_t)(this->block_size)};
         if (blocks[i] == 0)
             this->world[i].is_solid_wall = false;
         else if (blocks[i] == 1)

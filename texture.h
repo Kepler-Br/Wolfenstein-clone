@@ -9,9 +9,13 @@
 #include <glm/vec2.hpp>
 #include "types.h"
 
+class Texture_loader;
+
 class Texture
 {
 private:
+    friend Texture_loader;
+
     bool transparent;
     bool wrap = true;
     Pixel *pixels = nullptr;
@@ -26,6 +30,7 @@ public:
 
     void free();
     Pixel *get_pixels() const;
+    void set_pixel(const Pixel &color, const glm::ivec2 &position);
     const Pixel &get_pixel(const uint &index) const;
     const Pixel &get_pixel(const glm::ivec2 &position) const;
     const Pixel &get_normalized_pixel(const glm::vec2 &position) const;

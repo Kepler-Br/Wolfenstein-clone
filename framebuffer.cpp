@@ -87,7 +87,7 @@ void Framebuffer::clear()
 {
     if(!this->is_locked)
         throw std::runtime_error("Cannot clear not locked buffer.");
-    bzero(this->pixels, this->pixel_count);
+    memset(this->pixels, 0, this->pixel_count);
 }
 
 void Framebuffer::set_pixel(const Pixel &color, const glm::ivec2 &position)

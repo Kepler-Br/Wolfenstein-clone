@@ -41,10 +41,10 @@ void Render_thread::draw_floor(const int &column, const int &row, const int &cas
             floor_position.x/block_size < 0 || floor_position.y/block_size < 0)
         return;
     const Block &block = this->world->get_block(block_index);
-    const Texture &block_texture = this->texture_holder->get_by_id(block.floor_texture_id);
+    const Texture *block_texture = this->texture_holder->get_by_id(block.floor_texture_id);
     glm::vec2 uv = {(floor_position.x%block_size)/(float)block_size,
                     (floor_position.y%block_size)/(float)block_size};
-    const Pixel &pixel = block_texture.get_normalized_pixel(uv);
+    const Pixel &pixel = block_texture->get_normalized_pixel(uv);
     this->framebuffer->set_pixel(pixel, glm::ivec2(column, row));
 }
 
@@ -71,10 +71,10 @@ void Render_thread::draw_ceiling(const int &column, const int &row, const int &c
             ceiling_position.x/block_size < 0 || ceiling_position.y/block_size < 0)
         return;
     const Block &block = this->world->get_block(block_index);
-    const Texture &block_texture = this->texture_holder->get_by_id(block.ceiling_texture_id);
+    Texture *block_texture = this->texture_holder->get_by_id(block.ceiling_texture_id);
     glm::vec2 uv = {(ceiling_position.x%block_size)/(float)block_size,
                     (ceiling_position.y%block_size)/(float)block_size};
-    const Pixel &pixel = block_texture.get_normalized_pixel(uv);
+    const Pixel &pixel = block_texture->get_normalized_pixel(uv);
     this->framebuffer->set_pixel(pixel, glm::ivec2(column, row));
 }
 
@@ -101,7 +101,7 @@ void Render_thread::render_column(int cast_degree, const int &cast_column)
         bottomOfWall=this->framebuffer->get_resolution().y-1;
     // Add simple shading so that farther wall slices appear darker.
     // 850 is arbitrary value of the farthest distance.
-    dist=floor(dist);
+//    dist=floor(dist);
     float uv_start = 0.0f;
     float uv_step = (1.0f)/abs(projectedWallHeight);
     const Block &block = this->world->get_block(ray.block_id);
@@ -117,16 +117,16 @@ void Render_thread::render_column(int cast_degree, const int &cast_column)
         uv.y += uv_step;
         //            const glm::vec2 texture_uv = glm::vec2(float(castColumn)/this->sdl_wrapper.get_resolution().x,
         //                                                   float(i)/this->sdl_wrapper.get_resolution().y);
-        Texture texture;
+        Texture *texture = nullptr;
         if(ray.hit_side == direction_up)
             texture = this->texture_holder->get_by_id(block.wall_textures.up);
-        if(ray.hit_side == direction_down)
+        else if(ray.hit_side == direction_down)
             texture = this->texture_holder->get_by_id(block.wall_textures.down);
-        if(ray.hit_side == direction_left)
+        else if(ray.hit_side == direction_left)
             texture = this->texture_holder->get_by_id(block.wall_textures.left);
-        if(ray.hit_side == direction_right)
+        else
             texture = this->texture_holder->get_by_id(block.wall_textures.right);
-        Pixel pixel = texture.get_normalized_pixel(uv);
+        Pixel pixel = texture->get_normalized_pixel(glm::vec2(1.0f - uv.x, uv.y));
         this->framebuffer->set_pixel(pixel, glm::ivec2(cast_column, i));
     }
     for(int i = bottomOfWall; i < this->framebuffer->get_resolution().y; i++)
