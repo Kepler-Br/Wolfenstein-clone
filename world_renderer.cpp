@@ -73,6 +73,23 @@ void World_renderer::render_blocks(const glm::vec2 &center, const float &size, c
     }
 }
 
+void World_renderer::render_cast_one(const glm::vec2 &center, const float &size)
+{
+    SDL_Renderer *renderer = this->sdl_wrapper.get_renderer();
+    const float start_angle = this->player.get_x_view_angle() - this->lookup.angle30;
+    const float end_angle = this->player.get_x_view_angle() + this->lookup.angle30;
+    const float step = this->lookup.angle5;
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    for(float xangle = start_angle; xangle < end_angle; xangle += step)
+    {
+        Ray raycast = this->raycaster.cast_one(this->player.get_position(), xangle);
+        const glm::vec2 relative = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast.position.x * size, raycast.position.y * size);
+        SDL_RenderDrawLine(renderer, center.x, center.y,
+                        relative.x + center.x, relative.y + center.y);
+    }
+}
+
 World_renderer::World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
                    Raycaster &raycaster, Lookup_table &lookup,
                    Texture_holder &texture_holder, Framebuffer &framebuffer, const uint &render_cores = 4):
@@ -140,5 +157,6 @@ void World_renderer::render_map(const bool render_rays, const bool fill_screen, 
 //    if(render_rays)
 //        this->render_one_block_view_rays(center, size);
     this->render_blocks(center, size, fill_screen);
+//    xthis->render_cast_one(center, size);
     this->render_player(center, size);
 }

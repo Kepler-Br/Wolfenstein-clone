@@ -205,8 +205,8 @@ Ray Raycaster::cast_one(const glm::vec2 &position, int degree)
     float dist_to_next_horizontal_grid; // tile size)
     float x_intersection;  // x and y intersections
     float y_intersection;
-    float dist_to_next_x_intersection = 0.0f;
-    float dist_to_next_y_intersection = 0.0f;
+    float dist_to_next_x_intersection;
+    float dist_to_next_y_intersection;
 
     int x_grid_index;        // the current cell that the ray is in
     int y_grid_index;
@@ -220,9 +220,11 @@ Ray Raycaster::cast_one(const glm::vec2 &position, int degree)
     const int block_size = this->world.get_block_size();
 
     if (degree>=this->lookup.angle360)
-        degree -= this->lookup.angle360;
+        degree-=this->lookup.angle360;
     if (degree < 0)
+    {
         degree = this->lookup.angle360 + degree;
+    }
     // Ray is between 0 to 180 degree (1st and 2nd quadrant).
     // Ray is facing down
     if (degree > this->lookup.angle0 && degree < this->lookup.angle180)
@@ -243,12 +245,6 @@ Ray Raycaster::cast_one(const glm::vec2 &position, int degree)
         // 1/tan(arc)*verticalDistance
         // find the x interception to that wall
         x_intersection = xtemp + position.x;
-        x_grid_index = floor(horizontal_grid/block_size);
-        y_grid_index = floor(x_intersection/block_size);
-
-        y_map_index =floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
-        dist_to_horizontal_grid_being_hit = (x_intersection-position.x)*this->lookup.icos(degree);
-
     }
     // Else, the ray is facing up
     else
@@ -260,11 +256,49 @@ Ray Raycaster::cast_one(const glm::vec2 &position, int degree)
         x_intersection = xtemp + position.x;
 
         horizontal_grid--;
-        x_grid_index = floor(horizontal_grid/block_size);
-        y_grid_index = floor(x_intersection/block_size);
+    }
+    // LOOK FOR HORIZONTAL WALL
 
-        y_map_index =floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+    // If ray is directly facing right or left, then ignore it
+    if (degree==this->lookup.angle0 || degree==this->lookup.angle180)
+    {
+        dist_to_horizontal_grid_being_hit=99999999.0f;
+    }
+    // else, move the ray until it hits a horizontal wall
+    else
+    {
+        dist_to_next_x_intersection = this->lookup.x_step(degree);
         dist_to_horizontal_grid_being_hit = (x_intersection-position.x)*this->lookup.icos(degree);
+//        while (true)
+//        {
+//            // compute current map position to inspect
+//            x_grid_index = floor(x_intersection/block_size);
+//            y_grid_index = floor(horizontal_grid/block_size);
+//            int mapIndex=floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+
+//            // If we've looked as far as outside the map range, then bail out
+//            if ((x_grid_index>=this->world.get_world_dimensions().x) ||
+//                (y_grid_index>=this->world.get_world_dimensions().y) ||
+//                x_grid_index<0 || y_grid_index<0)
+//            {
+//                dist_to_horizontal_grid_being_hit = 999999999.0f;
+//                break;
+//            }
+//            // If the grid is not an Opening, then stop
+//            else if(this->world.get_block(mapIndex).is_solid_wall)
+//            {
+//                dist_to_horizontal_grid_being_hit = (x_intersection-position.x)*this->lookup.icos(degree);
+//                x_map_index = mapIndex;
+//                break;
+//            }
+//            // Else, keep looking.  At this point, the ray is not blocked, extend the ray to the next grid
+//            else
+//            {
+//                x_intersection += dist_to_next_x_intersection;
+//                horizontal_grid += dist_to_next_horizontal_grid;
+//            }
+
+//        }
     }
 
 
@@ -277,11 +311,6 @@ Ray Raycaster::cast_one(const glm::vec2 &position, int degree)
 
         float ytemp = this->lookup.tan(degree)*(vertical_grid - position.x);
         y_intersection = ytemp + position.y;
-        x_grid_index = floor(vertical_grid/block_size);
-        y_grid_index = floor(y_intersection/block_size);
-
-        x_map_index =floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
-        dist_to_vertical_grid_being_hit = (y_intersection-position.y)*this->lookup.isin(degree);
 
     }
     // RAY FACING LEFT
@@ -295,10 +324,45 @@ Ray Raycaster::cast_one(const glm::vec2 &position, int degree)
         y_intersection = ytemp + position.y;
 
         vertical_grid--;
-        x_grid_index = floor(vertical_grid/block_size);
-        y_grid_index = floor(y_intersection/block_size);
 
-        x_map_index = floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+    }
+      // LOOK FOR VERTICAL WALL
+    if (degree==this->lookup.angle90||degree==this->lookup.angle270)
+    {
+        dist_to_vertical_grid_being_hit = 99999999.0f;
+    }
+    else
+    {
+        dist_to_next_y_intersection = this->lookup.y_step(degree);
+        dist_to_vertical_grid_being_hit = (y_intersection-position.y)*this->lookup.isin(degree);
+//        while (true)
+//        {
+//            // compute current map position to inspect
+//            x_grid_index = floor(vertical_grid/block_size);
+//            y_grid_index = floor(y_intersection/block_size);
+
+//            int mapIndex=floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+
+
+//            if ((x_grid_index>=this->world.get_world_dimensions().x) ||
+//                (y_grid_index>=this->world.get_world_dimensions().y) ||
+//                x_grid_index<0 || y_grid_index<0)
+//            {
+//                dist_to_vertical_grid_being_hit = 99999999.0f;
+//                break;
+//            }
+//            else if (this->world.get_block(mapIndex).is_solid_wall)
+//            {
+//                dist_to_vertical_grid_being_hit = (y_intersection-position.y)*this->lookup.isin(degree);
+//                y_map_index = mapIndex;
+//                break;
+//            }
+//            else
+//            {
+//                y_intersection += dist_to_next_y_intersection;
+//                vertical_grid += dist_to_next_vertical_grid;
+//            }
+//        }
     }
     const float threshold = 0.5f * this->world.get_block_size();
     if(dist_to_horizontal_grid_being_hit < dist_to_vertical_grid_being_hit)
