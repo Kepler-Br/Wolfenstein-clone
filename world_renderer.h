@@ -36,6 +36,7 @@ class World_renderer
     void unlock_mutexes();
     void render_player(const glm::vec2 &center, const float &size);
     void render_blocks(const glm::vec2 &center, const float &size, const bool fill_screen);
+    void render_cast_one(const glm::vec2 &center, const float &size);
 public:
     World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
                    Raycaster &raycaster, Lookup_table &lookup, Texture_holder &texture_holder,
