@@ -5,10 +5,9 @@ CONFIG -= qt
 
 SOURCES += \
         *.cpp
-
 HEADERS += \
         *.h
 
-LIBS += -lSDL2 -lpthread
+LIBS += -lSDL2 -lpthread -lz
 
-DEFINES_DEBUG += DEBUG
+#DEFINES_DEBUG += DEBUG

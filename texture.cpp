@@ -16,6 +16,14 @@ Pixel *Texture::get_pixels() const
     return this->pixels;
 }
 
+void Texture::set_pixel(const Pixel &color, const glm::ivec2 &position)
+{
+    if (!this->wrap && (position.x >= this->resolution.x || position.y >= this->resolution.y))
+        throw std::runtime_error("Tried to set pixel image out of bounds without wrapping set(by ivec2).");
+    uint index = position.y * this->resolution.x + position.x;
+    this->pixels[index] = color;
+}
+
 void Texture::free()
 {
     delete []this->pixels;
@@ -79,7 +87,7 @@ void Texture::set_wrapping(const bool &wrap)
 
 void Texture::read(const std::string &path)
 {
-    static uint8_t file_sign[3];
+    uint8_t file_sign[3];
     std::ifstream file(path);
     if(file.bad() || !file.is_open())
         throw std::runtime_error("Cannot open image: " + path);

@@ -24,18 +24,18 @@ int Texture_holder::get_total() const
     return this->textures.size();
 }
 
-const Texture &Texture_holder::get_by_id(const size_t &id) const
+Texture *Texture_holder::get_by_id(const size_t &id) const
 {
     if (id >= this->textures.size())
         throw std::runtime_error("Tried to access non existing texture by id.");
-    return *this->textures[id];
+    return this->textures[id];
 }
 
-const Texture &Texture_holder::get_by_name(const std::string &name) const
+Texture *Texture_holder::get_by_name(const std::string &name) const
 {
     if(this->texture_names.find(name) == this->texture_names.end())
         throw std::runtime_error("Tried to access non existing texture by name.");
-    return *this->texture_names.at(name).first;
+    return this->texture_names.at(name).first;
 }
 
 int Texture_holder::load(const std::string &path, const std::string &name)

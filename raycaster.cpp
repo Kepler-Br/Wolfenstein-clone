@@ -192,6 +192,131 @@ Ray Raycaster::cast(glm::vec2 position, int degree)
             return {(size_t)y_map_index, {vertical_grid, y_intersection}, (float)dist_to_vertical_grid_being_hit, direction_up};
         else
             return {(size_t)y_map_index, {vertical_grid, y_intersection}, (float)dist_to_vertical_grid_being_hit, direction_down};
+    }
+}
 
+Ray Raycaster::cast_one(const glm::vec2 &position, int degree)
+{
+    float vertical_grid;        // horizotal or vertical coordinate of intersection
+    float horizontal_grid;      // theoritically, this will be multiple of TILE_SIZE
+                             // , but some trick did here might cause
+                             // the values off by 1
+    float dist_to_next_vertical_grid; // how far to the next bound (this is multiple of
+    float dist_to_next_horizontal_grid; // tile size)
+    float x_intersection;  // x and y intersections
+    float y_intersection;
+    float dist_to_next_x_intersection = 0.0f;
+    float dist_to_next_y_intersection = 0.0f;
+
+    int x_grid_index;        // the current cell that the ray is in
+    int y_grid_index;
+
+    int x_map_index = 0;
+    int y_map_index = 0;
+
+    float dist_to_vertical_grid_being_hit;      // the distance of the x and y ray intersections from
+    float dist_to_horizontal_grid_being_hit;      // the viewpoint
+
+    const int block_size = this->world.get_block_size();
+
+    if (degree>=this->lookup.angle360)
+        degree -= this->lookup.angle360;
+    if (degree < 0)
+        degree = this->lookup.angle360 + degree;
+    // Ray is between 0 to 180 degree (1st and 2nd quadrant).
+    // Ray is facing down
+    if (degree > this->lookup.angle0 && degree < this->lookup.angle180)
+    {
+        // truncuate then add to get the coordinate of the FIRST grid (horizontal
+        // wall) that is in front of the player (this is in pixel unit)
+        // ROUNDED DOWN
+        horizontal_grid = floor(position.y/block_size)*block_size  + block_size;
+//        horizontalGrid = (position.y/block_size)*block_size  + block_size;
+
+        // compute distance to the next horizontal wall
+        dist_to_next_horizontal_grid = block_size;
+
+        float xtemp = this->lookup.itan(degree)*(horizontal_grid-position.y);
+        // we can get the vertical distance to that wall by
+        // (horizontalGrid-playerY)
+        // we can get the horizontal distance to that wall by
+        // 1/tan(arc)*verticalDistance
+        // find the x interception to that wall
+        x_intersection = xtemp + position.x;
+        x_grid_index = floor(horizontal_grid/block_size);
+        y_grid_index = floor(x_intersection/block_size);
+
+        y_map_index =floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+        dist_to_horizontal_grid_being_hit = (x_intersection-position.x)*this->lookup.icos(degree);
+
+    }
+    // Else, the ray is facing up
+    else
+    {
+        horizontal_grid = floor(position.y/block_size)*block_size;
+        dist_to_next_horizontal_grid = -block_size;
+
+        float xtemp = this->lookup.itan(degree)*(horizontal_grid - position.y);
+        x_intersection = xtemp + position.x;
+
+        horizontal_grid--;
+        x_grid_index = floor(horizontal_grid/block_size);
+        y_grid_index = floor(x_intersection/block_size);
+
+        y_map_index =floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+        dist_to_horizontal_grid_being_hit = (x_intersection-position.x)*this->lookup.icos(degree);
+    }
+
+
+    // FOLLOW X RAY
+    if (degree < this->lookup.angle90 || degree > this->lookup.angle270)
+    {
+        vertical_grid = block_size + floor(position.x/block_size)*block_size;
+//        verticalGrid = block_size + (position.x/block_size)*block_size;
+        dist_to_next_vertical_grid = block_size;
+
+        float ytemp = this->lookup.tan(degree)*(vertical_grid - position.x);
+        y_intersection = ytemp + position.y;
+        x_grid_index = floor(vertical_grid/block_size);
+        y_grid_index = floor(y_intersection/block_size);
+
+        x_map_index =floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+        dist_to_vertical_grid_being_hit = (y_intersection-position.y)*this->lookup.isin(degree);
+
+    }
+    // RAY FACING LEFT
+    else
+    {
+        vertical_grid = floor(position.x/block_size)*block_size;
+//        verticalGrid = (position.x/block_size)*block_size;
+        dist_to_next_vertical_grid = -block_size;
+
+        float ytemp = this->lookup.tan(degree)*(vertical_grid - position.x);
+        y_intersection = ytemp + position.y;
+
+        vertical_grid--;
+        x_grid_index = floor(vertical_grid/block_size);
+        y_grid_index = floor(y_intersection/block_size);
+
+        x_map_index = floor(y_grid_index*this->world.get_world_dimensions().x+x_grid_index);
+    }
+    const float threshold = 0.5f * this->world.get_block_size();
+    if(dist_to_horizontal_grid_being_hit < dist_to_vertical_grid_being_hit)
+    {
+        const Block &block = this->world.get_block(x_map_index);
+        const float moved_beginning_coordinate = horizontal_grid - block.scaled_world_position.y;
+        if(moved_beginning_coordinate > threshold)
+            return {(size_t)x_map_index, {x_intersection, horizontal_grid}, (float)dist_to_horizontal_grid_being_hit, direction_right};
+        else
+            return {(size_t)x_map_index, {x_intersection, horizontal_grid}, (float)dist_to_horizontal_grid_being_hit, direction_left};
+    }
+    else
+    {
+        const Block &block = this->world.get_block(y_map_index);
+        const float moved_beginning_coordinate = vertical_grid - block.scaled_world_position.x;
+        if(moved_beginning_coordinate > threshold)
+            return {(size_t)y_map_index, {vertical_grid, y_intersection}, (float)dist_to_vertical_grid_being_hit, direction_up};
+        else
+            return {(size_t)y_map_index, {vertical_grid, y_intersection}, (float)dist_to_vertical_grid_being_hit, direction_down};
     }
 }

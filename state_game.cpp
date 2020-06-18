@@ -1,9 +1,5 @@
-//
-// Created by kepler-br on 6/10/20.
-//
-
 #include "state_game.h"
-
+#include <texture_loader.h>
 #include <iostream> //DELETEME
 State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_wrapper &sdl_instance) :
         State_base(main_loop, main_loop.get_prev_state()),
@@ -133,12 +129,10 @@ void State_game::on_predraw()
 
 void State_game::on_draw()
 {
-    auto *renderer = this->sdl_wrapper.get_renderer();
-
     this->sdl_wrapper.set_color(255, 255, 255);
 //    this->renderer.draw_world();
 
-    const glm::ivec2 &resolution = this->framebuffer.get_resolution();
+//    const glm::ivec2 &resolution = this->framebuffer.get_resolution();
     this->framebuffer.lock();
     this->renderer.render();
 //    for(int x = 0; x < resolution.x; x++)
@@ -153,6 +147,10 @@ void State_game::on_draw()
 //    }
     this->framebuffer.unlock();
     this->framebuffer.put();
+    if(render_map_state == 1)
+        this->renderer.render_map(false, false, 0.05f);
+    else if(render_map_state == 2)
+        this->renderer.render_map(false, true, 0.05f);
 //    this->sdl_wrapper.lock_framebuffer();
 //    this->sdl_wrapper.clear_framebuffer();
 //    this->renderer.render();
@@ -170,11 +168,19 @@ void State_game::on_postdraw()
 
 void State_game::preload()
 {
-    this->texture_holder.load("./image_packer/RW24_2.tex", "WALL");
-    this->texture_holder.load("./image_packer/DOOR2_4.tex", "DOOR");
-    this->texture_holder.load("./image_packer/WALL02_3.tex", "WALL2");
-    this->texture_holder.load("./image_packer/WALL69_9.tex", "WALL3");
-    this->texture_holder.load("./image_packer/WALL03_7.tex", "WALL4");
-    this->texture_holder.load("./image_packer/RSKY2.tex", "SKY2");
-    this->texture_holder.load("./image_packer/CEIL3_5.tex", "CEIL3_5");
+    Texture_loader loader;
+    std::string texture_paths[] = {/*"./image_packer/BAYONETTA.xft",*/
+                                  "./image_packer/BRICK_WALL.xft",
+                                  "./image_packer/BRICK_WALL2.xft",
+                                  "./image_packer/DOOR2_4.xft",
+                                  "./image_packer/RW24_2.xft",
+                                  "./image_packer/TITLEPIC.xft",
+                                  "./image_packer/CEIL1_1.xft"};
+    for(auto path: texture_paths)
+    {
+        std::string texture_name;
+        Texture *texture;
+        std::tie(texture, texture_name) = loader.load(path);
+        this->texture_holder.add_texture(texture_name, texture);
+    }
 }

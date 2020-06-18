@@ -34,6 +34,8 @@ class World_renderer
     void generate_tasks();
     void lock_mutexes();
     void unlock_mutexes();
+    void render_player(const glm::vec2 &center, const float &size);
+    void render_blocks(const glm::vec2 &center, const float &size, const bool fill_screen);
 public:
     World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
                    Raycaster &raycaster, Lookup_table &lookup, Texture_holder &texture_holder,
@@ -41,6 +43,7 @@ public:
     ~World_renderer();
 
     void render();
+    void render_map(const bool render_rays, const bool fill_screen, const float size);
 };
 
 #endif // RENDERER_H

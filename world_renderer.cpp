@@ -30,6 +30,49 @@ void World_renderer::unlock_mutexes()
         mutex->unlock();
 }
 
+void World_renderer::render_player(const glm::vec2 &center, const float &size)
+{
+    SDL_Renderer *renderer = this->sdl_wrapper.get_renderer();
+    const float forward_length = 300.0f;
+    const float square_size = 50.0f;
+    const auto &forward = glm::vec2(this->lookup.cos(this->player.get_x_view_angle()),
+                                    this->lookup.sin(this->player.get_x_view_angle()));
+    SDL_Rect rect;
+
+    SDL_SetRenderDrawColor(renderer, 237, 217, 154, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, center.x, center.y, center.x-forward.x*forward_length*size, center.y-forward.y*forward_length*size);
+
+    rect = {int(center.x-size*square_size), int(center.y-size*square_size),
+            int(size*square_size*2.0f), int(size*square_size*2.0f)};
+    SDL_SetRenderDrawColor(renderer, 225, 65, 69, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(renderer, &rect);
+}
+
+void World_renderer::render_blocks(const glm::vec2 &center, const float &size, const bool fill_screen)
+{
+    auto *renderer = this->sdl_wrapper.get_renderer();
+    SDL_Rect rect;
+    const float &block_size = this->world.get_block_size();
+
+    SDL_SetRenderDrawColor(renderer, 59, 212, 145, SDL_ALPHA_OPAQUE);
+    for (size_t i = 0; i < this->world.get_world_length(); i++)
+    {
+        const Block &block = this->world.get_block(i);
+//        if(!block.is_solid_wall || !block.seen_by_player)
+//            continue;
+//        if(!block.is_solid_wall)
+//            continue;
+        const glm::vec2 &position = block.scaled_world_position*size;
+        const glm::vec2 &player_relative = glm::vec2(this->player.get_position()*size) - position;
+        rect = {int(player_relative.x-block_size*size+center.x), int(player_relative.y-block_size*size+center.y),
+                (int)(block_size*size), (int)(block_size*size)};
+        if (fill_screen)
+            SDL_RenderFillRect(renderer, &rect);
+        else
+            SDL_RenderDrawRect(renderer, &rect);
+    }
+}
+
 World_renderer::World_renderer(World &world, Sdl_wrapper &sdl_wrapper, const Player &player,
                    Raycaster &raycaster, Lookup_table &lookup,
                    Texture_holder &texture_holder, Framebuffer &framebuffer, const uint &render_cores = 4):
@@ -74,5 +117,28 @@ void World_renderer::render()
     this->unlock_mutexes();
     std::this_thread::sleep_for(std::chrono::microseconds(1));
     this->lock_mutexes();
-//    std::cout << "Done rendering\n";
+    //    std::cout << "Done rendering\n";
+}
+
+void World_renderer::render_map(const bool render_rays, const bool fill_screen, const float size)
+{
+    const auto &renderer = this->sdl_wrapper.get_renderer();
+    const glm::ivec2 center = {
+        this->sdl_wrapper.get_resolution().x / 2.0f,
+        this->sdl_wrapper.get_resolution().y / 2.0f};
+    SDL_Rect rect;
+
+    if(fill_screen)
+    {
+        rect = {0, 0,
+                this->sdl_wrapper.get_resolution().x,
+                this->sdl_wrapper.get_resolution().y};
+        SDL_SetRenderDrawColor(renderer, 59, 114, 123, SDL_ALPHA_OPAQUE);
+        SDL_RenderFillRect(renderer, &rect);
+    }
+
+//    if(render_rays)
+//        this->render_one_block_view_rays(center, size);
+    this->render_blocks(center, size, fill_screen);
+    this->render_player(center, size);
 }
