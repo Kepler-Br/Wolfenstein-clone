@@ -218,7 +218,7 @@ void Render_thread::render_variable_height(int cast_degree, const int &cast_colu
         ray = this->raycaster->cast_one(ray.position, cast_degree);
 //        std::cout << ray.position.x  << " " << ray.position.y << std::endl;
         block = this->world->get_block(ray.block_id);
-        std::cout << ray.position.x << std::endl;
+//        std::cout << ray.position.x << std::endl;
         is_exeeding_world_dimensions = block.world_position.x <= this->world->get_world_dimensions().x ||
                                                 block.world_position.x <= 0 ||
                                                 block.world_position.y <= this->world->get_world_dimensions().y ||

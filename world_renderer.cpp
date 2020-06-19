@@ -87,10 +87,10 @@ void World_renderer::render_cast_one(const glm::vec2 &center, const float &size)
         glm::vec2 relative = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast.position.x * size, raycast.position.y * size);
         SDL_RenderDrawLine(renderer, center.x, center.y,
                         relative.x + center.x, relative.y + center.y);
-//        Ray raycast2 = this->raycaster.cast_one(raycast.position, xangle);
-//        glm::vec2 relative2 = glm::vec2(raycast.position.x*size, raycast.position.y*size) - glm::vec2(raycast2.position.x * size, raycast2.position.y * size);
-//        SDL_RenderDrawLine(renderer, relative.x + center.x, relative.y + center.y,
-//                           relative.x + center.x + relative2.x, relative.y + center.y + relative2.y);
+        Ray raycast2 = this->raycaster.cast_one(raycast.position, xangle);
+        glm::vec2 relative2 = glm::vec2(raycast.position.x*size, raycast.position.y*size) - glm::vec2(raycast2.position.x * size, raycast2.position.y * size);
+        SDL_RenderDrawLine(renderer, relative.x + center.x, relative.y + center.y,
+                           relative.x + center.x + relative2.x, relative.y + center.y + relative2.y);
 //        Ray raycast3 = this->raycaster.cast_one(raycast.position, xangle);
 //        glm::vec2 relative3 = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast2.position.x * size, raycast2.position.y * size);
 //        SDL_RenderDrawLine(renderer, relative.x + center.x + relative2.x, relative.y + center.y + relative2.y,
