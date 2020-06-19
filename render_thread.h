@@ -74,6 +74,7 @@ private:
     void draw_floor(const int &column, const int &row, const int &cast_degree);
     void draw_ceiling(const int &column, const int &row, const int &cast_degree);
     void render_column(int cast_degree, const int &cast_column);
+    void render_variable_height(int cast_degree, const int &cast_column);
     void render();
 
 public:
