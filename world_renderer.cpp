@@ -84,9 +84,17 @@ void World_renderer::render_cast_one(const glm::vec2 &center, const float &size)
     for(float xangle = start_angle; xangle < end_angle; xangle += step)
     {
         Ray raycast = this->raycaster.cast_one(this->player.get_position(), xangle);
-        const glm::vec2 relative = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast.position.x * size, raycast.position.y * size);
+        glm::vec2 relative = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast.position.x * size, raycast.position.y * size);
         SDL_RenderDrawLine(renderer, center.x, center.y,
                         relative.x + center.x, relative.y + center.y);
+//        Ray raycast2 = this->raycaster.cast_one(raycast.position, xangle);
+//        glm::vec2 relative2 = glm::vec2(raycast.position.x*size, raycast.position.y*size) - glm::vec2(raycast2.position.x * size, raycast2.position.y * size);
+//        SDL_RenderDrawLine(renderer, relative.x + center.x, relative.y + center.y,
+//                           relative.x + center.x + relative2.x, relative.y + center.y + relative2.y);
+//        Ray raycast3 = this->raycaster.cast_one(raycast.position, xangle);
+//        glm::vec2 relative3 = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast2.position.x * size, raycast2.position.y * size);
+//        SDL_RenderDrawLine(renderer, relative.x + center.x + relative2.x, relative.y + center.y + relative2.y,
+//                           relative.x + center.x + relative2.x + relative3.x, relative.y + center.y + relative2.y + relative3.y);
     }
 }
 
@@ -157,6 +165,6 @@ void World_renderer::render_map(const bool render_rays, const bool fill_screen, 
 //    if(render_rays)
 //        this->render_one_block_view_rays(center, size);
     this->render_blocks(center, size, fill_screen);
-//    xthis->render_cast_one(center, size);
+    this->render_cast_one(center, size);
     this->render_player(center, size);
 }

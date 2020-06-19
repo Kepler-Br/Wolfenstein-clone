@@ -35,7 +35,7 @@ World::World() {
                           {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5},
                           .floor_texture_id=4,
                           .ceiling_texture_id=5,
-                          .floor_height=(size_t)(this->block_size)};
+                          .floor_height=(size_t)(this->block_size)+rand()%20};
         if (blocks[i] == 0)
             this->world[i].is_solid_wall = false;
         else if (blocks[i] == 1)
@@ -62,7 +62,8 @@ const glm::ivec2 &World::get_world_dimensions() const
 const Block &World::get_block(const glm::ivec2 &position) const
 {
     if (position.x >= this->world_dimensions.x || position.y >= this->world_dimensions.y || position.x < 0 || position.y < 0)
-        throw std::out_of_range("Tried to access index outside of the map.");
+        return this->world[0];
+//        throw std::out_of_range("Tried to access index outside of the map.");
     const int index = position.y * this->world_dimensions.x + position.x;
     return this->world[index];
 }
@@ -70,7 +71,8 @@ const Block &World::get_block(const glm::ivec2 &position) const
 Block &World::get_block(const glm::ivec2 &position)
 {
     if (position.x >= this->world_dimensions.x || position.y >= this->world_dimensions.y || position.x < 0 || position.y < 0)
-        throw std::out_of_range("Tried to access index outside of the map.");
+        return this->world[0];
+//        throw std::out_of_range("Tried to access index outside of the map.");
     const int index = position.y * this->world_dimensions.x + position.x;
     return this->world[index];
 }
@@ -78,7 +80,8 @@ Block &World::get_block(const glm::ivec2 &position)
 const Block &World::get_block(const size_t &index) const
 {
     if (index >= this->world_length)
-        throw std::out_of_range("Tried to access index outside of the map.");
+        return this->world[0];
+//        throw std::out_of_range("Tried to access index outside of the map.");
 //        return this->world[0];
     return this->world[index];
 }
@@ -86,7 +89,8 @@ const Block &World::get_block(const size_t &index) const
 Block &World::get_block(const size_t &index)
 {
     if (index >= this->world_length)
-        throw std::out_of_range("Tried to access index outside of the map.");
+        return this->world[0];
+//        throw std::out_of_range("Tried to access index outside of the map.");
     return this->world[index];
 }
 
