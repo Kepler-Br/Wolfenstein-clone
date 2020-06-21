@@ -40,7 +40,7 @@ public:
     int get_running_speed() const;
     void setRunning_speed(int value);
     void setSpeed(int value);
-    void setHeight(int value);
+    void set_height(int value);
 };
 
 #endif //WOLFENSHETIN_PLAYER_H

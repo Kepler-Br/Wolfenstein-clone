@@ -120,7 +120,8 @@ void State_game::on_update()
     std::cout << "FPS: " << 1.0f/this->main_loop.get_deltatime() << std::endl;
     const Block player_block = this->world.get_block({this->player.get_position().x/this->world.get_block_size(),
                                                      this->player.get_position().y/this->world.get_block_size()});
-    this->player.setHeight(player_block.floor_height + 512);
+    this->player.set_height(player_block.floor_height + 512);
+//    this->player.setHeight(1012);
 }
 
 void State_game::on_predraw()
