@@ -31,6 +31,11 @@ void Player::setSpeed(int value)
     speed = value;
 }
 
+void Player::setHeight(int value)
+{
+    height = value;
+}
+
 int Player::clamp_angle(const int degree)
 {
     //    if(degree >= 360)
