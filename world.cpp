@@ -11,13 +11,13 @@ World::World() {
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 500, 500, 500, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 500, 0, 0, 0, 0, 1,
+                                               1, 0, 0, 0, 0, 500, 500, 500, 0, 0, 1,
                                                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+                                               1, 0, 100, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               1, 100, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                               10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 //    int *blocks = new int[this->world_length] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     this->world = new Block[this->world_length];
 
@@ -36,22 +36,14 @@ World::World() {
                           {8,8,8,8},
                           .floor_texture_id=7,
                           .ceiling_texture_id=5,
-                          .floor_height=/*(size_t)(this->block_size)+*/ 100 + (size_t)rand()%500};
-        if (blocks[i] == 0)
-            this->world[i].is_solid_wall = false;
-        else if (blocks[i] == 1)
-        {
-            this->world[i].is_solid_wall = true;
-            this->world[i].is_passable = false;
-        }
-//        else if (blocks[i] == 2)
-//        {
-//            this->world[i].is_solid_wall = true;
-//            this->world[i].is_portal = true;
-//        }
+                          .floor_height=/*(size_t)(this->block_size)+*/ 100 + (size_t)rand()%500/*(size_t)blocks[i]*/};
+        this->world[i].is_solid_wall = false;
+        this->world[i].floor_height = blocks[i];
+
         this->world[i].color = {rand() % 255, rand() % 255, rand() % 255};
     }
     this->world[60].wall_textures.up = 1;
+    this->world[60].wall_textures.left = 2;
     delete[] blocks;
 }
 

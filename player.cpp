@@ -31,7 +31,7 @@ void Player::setSpeed(int value)
     speed = value;
 }
 
-void Player::setHeight(int value)
+void Player::set_height(int value)
 {
     height = value;
 }
