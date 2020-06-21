@@ -32,10 +32,11 @@ World::World() {
                           .is_solid_wall=true, .is_transparent=false, .is_passable=true, .is_portal=false,
                           .is_lit_by_lamp=false, .seen_by_player=false, .is_ceiling_sky=true, .is_bottom_sky=false,
                           .portal_to_block_id=0, .top_sky_texture_id=0, .bottom_sky_texture_id=0,
-                          {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5},
-                          .floor_texture_id=4,
+//                          {(size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5, (size_t)rand()%5},
+                          {8,8,8,8},
+                          .floor_texture_id=7,
                           .ceiling_texture_id=5,
-                          .floor_height=(size_t)(this->block_size)+rand()%20};
+                          .floor_height=/*(size_t)(this->block_size)+*/ 100 + (size_t)rand()%500};
         if (blocks[i] == 0)
             this->world[i].is_solid_wall = false;
         else if (blocks[i] == 1)

@@ -9,7 +9,7 @@ State_game::State_game(Main_loop &main_loop, Input_manager &input_manager, Sdl_w
         texture_holder(10),
         raycaster(world, lookup),
         framebuffer(sdl_wrapper),
-        renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder, framebuffer, 2)
+        renderer(world, sdl_wrapper, player, raycaster, lookup, texture_holder, framebuffer, 4)
 {
     const glm::ivec2 framebuffer_resolution = this->sdl_wrapper.get_resolution() / this->framebuffer_divider;
     this->framebuffer.init(framebuffer_resolution);
@@ -118,6 +118,9 @@ void State_game::on_event()
 void State_game::on_update()
 {
     std::cout << "FPS: " << 1.0f/this->main_loop.get_deltatime() << std::endl;
+    const Block player_block = this->world.get_block({this->player.get_position().x/this->world.get_block_size(),
+                                                     this->player.get_position().y/this->world.get_block_size()});
+    this->player.setHeight(player_block.floor_height + 512);
 }
 
 void State_game::on_predraw()
@@ -134,6 +137,7 @@ void State_game::on_draw()
 
 //    const glm::ivec2 &resolution = this->framebuffer.get_resolution();
     this->framebuffer.lock();
+    this->framebuffer.clear();
     this->renderer.render();
 //    for(int x = 0; x < resolution.x; x++)
 //    {
@@ -175,7 +179,10 @@ void State_game::preload()
                                   "./image_packer/DOOR2_4.xft",
                                   "./image_packer/RW24_2.xft",
                                   "./image_packer/TITLEPIC.xft",
-                                  "./image_packer/CEIL1_1.xft"};
+                                  "./image_packer/CEIL1_1.xft",
+                                  "./image_packer/grass_block_side.xft",
+                                  "./image_packer/dirt.xft",
+                                  "./image_packer/uv_grid.xft"};
     for(auto path: texture_paths)
     {
         std::string texture_name;

@@ -71,9 +71,10 @@ private:
     int wall_height = 128*8;
 
     float get_block_x_uv(const Ray &ray, const Block &block);
-    void draw_floor(const int &column, const int &row, const int &cast_degree);
+    void draw_floor(const int &column, const int &row, const int &cast_degree, int height);
     void draw_ceiling(const int &column, const int &row, const int &cast_degree);
     void render_column(int cast_degree, const int &cast_column);
+    void render_column2(int cast_degree, const int &cast_column);
     void render_variable_height(int cast_degree, const int &cast_column);
     void render();
 

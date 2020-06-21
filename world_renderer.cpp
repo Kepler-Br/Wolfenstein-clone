@@ -78,23 +78,32 @@ void World_renderer::render_cast_one(const glm::vec2 &center, const float &size)
     SDL_Renderer *renderer = this->sdl_wrapper.get_renderer();
     const float start_angle = this->player.get_x_view_angle() - this->lookup.angle30;
     const float end_angle = this->player.get_x_view_angle() + this->lookup.angle30;
-    const float step = this->lookup.angle5;
+    const float step = 1;
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     for(float xangle = start_angle; xangle < end_angle; xangle += step)
     {
         Ray raycast = this->raycaster.cast_one(this->player.get_position(), xangle);
-        glm::vec2 relative = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast.position.x * size, raycast.position.y * size);
-        SDL_RenderDrawLine(renderer, center.x, center.y,
-                        relative.x + center.x, relative.y + center.y);
-        Ray raycast2 = this->raycaster.cast_one(raycast.position, xangle);
-        glm::vec2 relative2 = glm::vec2(raycast.position.x*size, raycast.position.y*size) - glm::vec2(raycast2.position.x * size, raycast2.position.y * size);
-        SDL_RenderDrawLine(renderer, relative.x + center.x, relative.y + center.y,
-                           relative.x + center.x + relative2.x, relative.y + center.y + relative2.y);
-//        Ray raycast3 = this->raycaster.cast_one(raycast.position, xangle);
-//        glm::vec2 relative3 = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast2.position.x * size, raycast2.position.y * size);
-//        SDL_RenderDrawLine(renderer, relative.x + center.x + relative2.x, relative.y + center.y + relative2.y,
-//                           relative.x + center.x + relative2.x + relative3.x, relative.y + center.y + relative2.y + relative3.y);
+                Block block = this->world.get_block(raycast.block_id);
+
+        bool is_exeeding_world_dimensions = block.world_position.x > this->world.get_world_dimensions().x ||
+                                            block.world_position.x == 0 ||
+                                            block.world_position.y > this->world.get_world_dimensions().y ||
+                                            block.world_position.y == 0;
+        int total_length = raycast.length;
+        while(!is_exeeding_world_dimensions)
+        {
+            glm::vec2 relative = glm::vec2(this->player.get_position()*size) - glm::vec2(raycast.position.x * size, raycast.position.y * size);
+            SDL_RenderDrawLine(renderer, center.x, center.y,
+                            relative.x + center.x, relative.y + center.y);
+            raycast = this->raycaster.cast_one(raycast.position, xangle);
+            block = this->world.get_block(raycast.block_id);
+            total_length += raycast.length;
+            is_exeeding_world_dimensions = block.world_position.x > this->world.get_world_dimensions().x ||
+                                                        block.world_position.x == 0 ||
+                                                        block.world_position.y > this->world.get_world_dimensions().y ||
+                                                        block.world_position.y == 0;
+        }
     }
 }
 
