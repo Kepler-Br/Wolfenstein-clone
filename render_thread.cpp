@@ -5,13 +5,13 @@
 float Render_thread::get_block_x_uv(const Ray &ray, const Block &block)
 {
     Directions side = ray.hit_side;
-    if(side == direction_up)
-        return (ray.position.y - block.scaled_world_position.y) / this->world->get_block_size();
-    if(side == direction_down)
-        return 1.0f - (ray.position.y - block.scaled_world_position.y) / this->world->get_block_size();
     if(side == direction_left)
+        return (ray.position.y - block.scaled_world_position.y) / this->world->get_block_size();
+    else if(side == direction_right)
+        return 1.0f - (ray.position.y - block.scaled_world_position.y) / this->world->get_block_size();
+    else if(side == direction_up)
         return (ray.position.x - block.scaled_world_position.x) / this->world->get_block_size();
-    if(side == direction_right)
+    else//if(side == direction_down)
         return 1.0f - (ray.position.x - block.scaled_world_position.x) / this->world->get_block_size();
 
 
@@ -51,7 +51,7 @@ float Render_thread::get_block_x_uv(const Ray &ray, const Block &block)
 void Render_thread::draw_floor(const int &column, const int &row, const int &cast_degree, int height)
 {
     const int &distance_to_PP = this->player->get_distance_to_projection_plane();
-    const int &player_height = this->world->get_block_size();
+//    const int &player_height = this->world->get_block_size();
     int row_diff = row - this->framebuffer->get_center().y;
     if(row_diff == 0)
         row_diff = 1;
@@ -78,17 +78,17 @@ void Render_thread::draw_floor(const int &column, const int &row, const int &cas
     this->framebuffer->set_pixel(pixel, glm::ivec2(column, row));
 }
 
-void Render_thread::draw_ceiling(const int &column, const int &row, const int &cast_degree)
+void Render_thread::draw_ceiling(const int &column, const int &row, const int &cast_degree, const int height)
 {
     const int &distance_to_PP = this->player->get_distance_to_projection_plane();
-    const int &player_height = this->world->get_block_size();
+//    const int &player_height = this->world->get_block_size();
     int row_diff = row - this->framebuffer->get_center().y;
     if(row_diff == 0)
         row_diff = 1;
     int degree_diff = std::abs(std::abs(cast_degree) - std::abs(this->player->get_x_view_angle()));
     if(degree_diff == 0)
         degree_diff = 1;
-    int distance_to_ceiling_point = (player_height * distance_to_PP)/row_diff;
+    int distance_to_ceiling_point = (height * distance_to_PP)/row_diff;
     distance_to_ceiling_point /= this->lookup->cos(degree_diff);
     glm::ivec2 ceiling_position = glm::vec2(-distance_to_ceiling_point * this->lookup->cos(cast_degree),
                                             -distance_to_ceiling_point * this->lookup->sin(cast_degree));
@@ -163,7 +163,7 @@ void Render_thread::render_column(int cast_degree, const int &cast_column)
 //        this->draw_floor(cast_column, i, cast_degree);
         ;
     for(int i = topOfWall; i >= 0; i--)
-        this->draw_ceiling(cast_column, i, cast_degree);
+        this->draw_ceiling(cast_column, i, cast_degree, 2);
 }
 
 void Render_thread::render_column2(int cast_degree, const int &cast_column)
@@ -174,13 +174,11 @@ void Render_thread::render_column2(int cast_degree, const int &cast_column)
         cast_degree-=this->lookup->angle360;
     const glm::ivec2 &player_position = this->player->get_position();
     float dist;
-    int top_of_wall;   // used to compute the top and bottom of the sliver that
-    int bottom_of_wall;   // will be the staring point of floor and ceiling
+    int top_of_wall;
+    int bottom_of_wall;
     Ray ray = this->raycaster->cast_one(player_position, cast_degree);
     float total_length = ray.length;
-//    float old_top = this->framebuffer->get_resolution().y;
     bottom_of_wall = this->framebuffer->get_resolution().y;
-//    int current_height = this->world->get_block(ray.block_id).floor_height;
     float old_top_of_wall = this->framebuffer->get_resolution().y;
     float old_bottom_of_wall = this->framebuffer->get_resolution().y;
     Block old_block = this->world->get_block({this->player->get_position().x/this->world->get_block_size(),
@@ -188,9 +186,8 @@ void Render_thread::render_column2(int cast_degree, const int &cast_column)
     Block block = this->world->get_block(ray.block_id);
 
     float prev_block_top = this->framebuffer->get_resolution().y;
+    float prev_block_bottom = this->framebuffer->get_resolution().y;
 
-//    float prev_block_bottom = 0;
-//    float max = this->framebuffer->get_resolution().y;
     bool first_iteration = true;
     while(true)
     {
@@ -215,17 +212,15 @@ void Render_thread::render_column2(int cast_degree, const int &cast_column)
 
         float scale2 = this->player->get_distance_to_projection_plane()*old_block.floor_height/dist;
         float top_of_wall2 = bottom_of_wall - scale2;
-        int oldTop = top_of_wall;
+        int uv_old_top = top_of_wall;
         if (top_of_wall<0)
             top_of_wall=0;
         if (bottom_of_wall>=this->framebuffer->get_resolution().y)
             bottom_of_wall=this->framebuffer->get_resolution().y-1;
-        if(first_iteration)
-            top_of_wall = oldTop;
         float uv_start = 0.0f;
         float uv_step = (1.0f)/abs(scale);
-        if(oldTop < 0)
-            uv_start = float(-oldTop)/scale;
+        if(uv_old_top < 0)
+            uv_start = float(-uv_old_top)/scale;
         //        glm::vec2 uv = glm::vec2((ray.position.x - block.scaled_world_position.x) / this->world.get_block_size(), uv_start);
         glm::vec2 uv = glm::vec2(0, uv_start);
         uv.x = this->get_block_x_uv(ray, block);
@@ -249,62 +244,22 @@ void Render_thread::render_column2(int cast_degree, const int &cast_column)
                 continue;
             this->framebuffer->set_pixel(pixel, glm::ivec2(cast_column, i));
         }
-//        for(int i = top_of_wall2; i < bottom_of_wall2; i++)
-//        {
-//            if(i > old_top_of_wall)
-//                continue;
-//            Pixel pixel = {0, 0, 0, 255};
-//            this->framebuffer->set_pixel(pixel, glm::ivec2(cast_column, i));
-//        }
-//        for(int i = top_of_wall2; i < top_of_wall2; i++)
-//        if(first_iteration)
-//            top_of_wall2 = bottom_of_wall;
         for(int i = top_of_wall2; i <= old_top_of_wall; i++)
         {
             if(i > old_top_of_wall)
                 continue;
             if(i > prev_block_top)
                 continue;
-//            if(i < prev)
-//                continue;
             this->draw_floor(cast_column, i, cast_degree, -old_block.floor_height+player->get_height());
         }
-//        for(int i = top_of_wall2; i <= top_of_wall2+3; i++)
+//        for(int i = bottom_of_wall; i <= old_bottom_of_wall; i++)
 //        {
-//            if(i > old_top_of_wall)
+//            if(i > old_bottom_of_wall)
 //                continue;
-//            if(i > prev_block_top)
+//            if(i > prev_block_bottom)
 //                continue;
-//            Pixel pixel = {255, 0, 255, 255};
-//            this->framebuffer->set_pixel(pixel, {cast_column, i});
+//            this->draw_ceiling(cast_column, i, cast_degree, -old_block.floor_height+player->get_height());
 //        }
-//        const int kk = prev_block_top;
-//        for(int i = kk; i < kk+4; i++)
-//        {
-////            if(i > old_top_of_wall)
-////                continue;
-//            Pixel pixel = {255, 0, 255, 255};
-//            this->framebuffer->set_pixel(pixel, glm::ivec2(cast_column, i));
-//        }
-//        for(int i = topOfWall; i < topOfWall+2; i++)
-//        {
-//            if(i > old_top_of_wall)
-//                continue;
-//            Pixel pixel = {255, 0, 0, 255};
-//            this->framebuffer->set_pixel(pixel, glm::ivec2(cast_column, i));
-//        }
-//        for(int i = top_of_wall2; i < top_of_wall2+2; i++)
-//        {
-//            if(i > old_top_of_wall)
-//                continue;
-//            Pixel pixel = {255, 0, 255, 255};
-//            this->framebuffer->set_pixel(pixel, glm::ivec2(cast_column, i));
-
-//        }
-
-//        if(block.is_solid_wall)
-//            break;
-//        old_top = oldTop;
         old_block = block;
         ray = this->raycaster->cast_one(ray.position, cast_degree);
         block = this->world->get_block(ray.block_id);
@@ -314,6 +269,7 @@ void Render_thread::render_column2(int cast_degree, const int &cast_column)
         if(top_of_wall < old_top_of_wall)
             old_top_of_wall = top_of_wall;
         prev_block_top = top_of_wall2;
+        prev_block_bottom = bottom_of_wall;
         first_iteration = false;
     }
 }
